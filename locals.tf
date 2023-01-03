@@ -163,5 +163,5 @@ module "roles_deep_merge" {
   source  = "Invicton-Labs/deepmerge/null"
   version = "0.1.5"
 
-  maps = [local.default_roles, var.roles]
+  maps = [local.default_roles, local.provided_roles]
 }
