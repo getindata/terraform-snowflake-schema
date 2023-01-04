@@ -5,48 +5,51 @@ locals {
     lookup(module.schema_label.descriptors, var.descriptor_name, module.schema_label.id), "/${module.schema_label.delimiter}${module.schema_label.delimiter}+/", module.schema_label.delimiter
   ), module.schema_label.delimiter) : null
 
+  create_default_roles = module.this.enabled && var.create_default_roles
+  on_future_grant_key  = ""
+
   default_roles = {
     readonly = {
       schema_grants = {
         privileges = ["USAGE"]
       }
       table_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["SELECT"]
         }
       }
       external_table_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["SELECT", "REFERENCES"]
         }
       }
       view_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["SELECT", "REFERENCES"]
         }
       }
       materialized_view_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["SELECT", "REFERENCES"]
         }
       }
       file_format_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["USAGE"]
         }
       }
       function_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["USAGE"]
         }
       }
       stage_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["USAGE"]
         }
       }
       task_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["MONITOR"]
         }
       }
@@ -54,79 +57,79 @@ locals {
     read_classified = {}
     readwrite = {
       table_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
           on_future  = true
       } }
       stage_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["READ", "WRITE"]
         }
       }
       procedure_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["USAGE"]
         }
       }
       task_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OPERATE"]
         }
       }
     }
     modify = {
       table_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       external_table_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       view_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       materialized_view_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       file_format_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       function_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       stage_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       task_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       procedure_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       sequence_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
       stream_grants = {
-        _ = {
+        (local.on_future_grant_key) = {
           privileges = ["OWNERSHIP"]
         }
       }
@@ -149,12 +152,18 @@ locals {
     if !contains(keys(local.default_roles), role_name)
   }
 
+  readonly_role_enabled        = local.create_default_roles && try(local.roles["readonly"].enabled, true)
+  readwrite_role_enabled       = local.create_default_roles && try(local.roles["readwrite"].enabled, true)
+  read_classified_role_enabled = local.create_default_roles && try(local.roles["read_classified"].enabled, true)
+  modify_role_enabled          = local.create_default_roles && try(local.roles["modify"].enabled, true)
+  admin_role_enabled           = local.create_default_roles && try(local.roles["admin"].enabled, true)
+
   role_modules = merge(
-    module.snowflake_readonly_role.name != null ? { readonly = module.snowflake_readonly_role } : {},
-    module.snowflake_readwrite_role.name != null ? { readwrite = module.snowflake_readwrite_role } : {},
-    module.snowflake_read_classified_role.name != null ? { read_classified = module.snowflake_read_classified_role } : {},
-    module.snowflake_modify_role.name != null ? { modify = module.snowflake_modify_role } : {},
-    module.snowflake_admin_role.name != null ? { admin = module.snowflake_admin_role } : {},
+    local.readonly_role_enabled ? { readonly = module.snowflake_readonly_role } : {},
+    local.readwrite_role_enabled ? { readwrite = module.snowflake_readwrite_role } : {},
+    local.read_classified_role_enabled ? { read_classified = module.snowflake_read_classified_role } : {},
+    local.modify_role_enabled ? { modify = module.snowflake_modify_role } : {},
+    local.admin_role_enabled ? { admin = module.snowflake_admin_role } : {},
     module.snowflake_custom_role
   )
 }

@@ -24,7 +24,7 @@ module "snowflake_readonly_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && try(local.roles["readonly"].enabled, true)
+  enabled = local.readonly_role_enabled
 
   name       = "readonly"
   attributes = [var.database, one(snowflake_schema.this[*].name)]
@@ -39,7 +39,7 @@ module "snowflake_read_classified_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && try(local.roles["read_classified"].enabled, true)
+  enabled = local.read_classified_role_enabled
 
   name       = "read_classified"
   attributes = [var.database, one(snowflake_schema.this[*].name)]
@@ -54,7 +54,7 @@ module "snowflake_readwrite_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && try(local.roles["readwrite"].enabled, true)
+  enabled = local.readwrite_role_enabled
 
   name       = "readwrite"
   attributes = [var.database, one(snowflake_schema.this[*].name)]
@@ -69,7 +69,7 @@ module "snowflake_modify_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && try(local.roles["modify"].enabled, true)
+  enabled = local.modify_role_enabled
 
   name       = "modify"
   attributes = [var.database, one(snowflake_schema.this[*].name)]
@@ -84,7 +84,7 @@ module "snowflake_admin_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && try(local.roles["admin"].enabled, true)
+  enabled = local.admin_role_enabled
 
   name       = "admin"
   attributes = [var.database, one(snowflake_schema.this[*].name)]
@@ -133,7 +133,7 @@ resource "snowflake_table_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -147,7 +147,7 @@ resource "snowflake_external_table_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -160,7 +160,7 @@ resource "snowflake_view_grant" "this" {
   }) : {}
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -174,7 +174,7 @@ resource "snowflake_materialized_view_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -188,7 +188,7 @@ resource "snowflake_file_format_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -202,7 +202,7 @@ resource "snowflake_function_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -216,7 +216,7 @@ resource "snowflake_stage_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -230,7 +230,7 @@ resource "snowflake_task_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -244,7 +244,7 @@ resource "snowflake_procedure_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -258,7 +258,7 @@ resource "snowflake_sequence_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
@@ -272,7 +272,7 @@ resource "snowflake_stream_grant" "this" {
 
   database_name = var.database
   schema_name   = one(snowflake_schema.this[*].name)
-  on_future     = each.key == "_"
+  on_future     = each.key == local.on_future_grant_key
   privilege     = each.key
   roles         = each.value
 }
