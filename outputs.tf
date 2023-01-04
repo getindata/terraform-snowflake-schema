@@ -19,7 +19,12 @@ output "is_managed" {
   value       = one(snowflake_schema.this[*].is_managed)
 }
 
+output "database" {
+  description = "Database where the schema is deployed to"
+  value       = one(snowflake_schema.this[*].database)
+}
+
 output "roles" {
   description = "Snowflake Roles"
-  value       = local.role_modules
+  value       = local.roles
 }

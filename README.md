@@ -89,12 +89,8 @@ module "snowflake_schema" {
 |------|--------|---------|
 | <a name="module_roles_deep_merge"></a> [roles\_deep\_merge](#module\_roles\_deep\_merge) | Invicton-Labs/deepmerge/null | 0.1.5 |
 | <a name="module_schema_label"></a> [schema\_label](#module\_schema\_label) | cloudposse/label/null | 0.25.0 |
-| <a name="module_snowflake_admin_role"></a> [snowflake\_admin\_role](#module\_snowflake\_admin\_role) | getindata/role/snowflake | 1.0.3 |
 | <a name="module_snowflake_custom_role"></a> [snowflake\_custom\_role](#module\_snowflake\_custom\_role) | getindata/role/snowflake | 1.0.3 |
-| <a name="module_snowflake_modify_role"></a> [snowflake\_modify\_role](#module\_snowflake\_modify\_role) | getindata/role/snowflake | 1.0.3 |
-| <a name="module_snowflake_read_classified_role"></a> [snowflake\_read\_classified\_role](#module\_snowflake\_read\_classified\_role) | getindata/role/snowflake | 1.0.3 |
-| <a name="module_snowflake_readonly_role"></a> [snowflake\_readonly\_role](#module\_snowflake\_readonly\_role) | getindata/role/snowflake | 1.0.3 |
-| <a name="module_snowflake_readwrite_role"></a> [snowflake\_readwrite\_role](#module\_snowflake\_readwrite\_role) | getindata/role/snowflake | 1.0.3 |
+| <a name="module_snowflake_default_role"></a> [snowflake\_default\_role](#module\_snowflake\_default\_role) | getindata/role/snowflake | 1.0.3 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Outputs
@@ -102,6 +98,7 @@ module "snowflake_schema" {
 | Name | Description |
 |------|-------------|
 | <a name="output_data_retention_days"></a> [data\_retention\_days](#output\_data\_retention\_days) | Data retention days for the schema |
+| <a name="output_database"></a> [database](#output\_database) | Database where the schema is deployed to |
 | <a name="output_is_managed"></a> [is\_managed](#output\_is\_managed) | Is schema managed |
 | <a name="output_is_transient"></a> [is\_transient](#output\_is\_transient) | Is schema transient |
 | <a name="output_name"></a> [name](#output\_name) | Name of the schema |
