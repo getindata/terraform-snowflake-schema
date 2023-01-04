@@ -26,7 +26,7 @@ module "snowflake_default_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && var.create_default_roles && lookup(each.value, "enabled", true)
+  enabled = local.create_default_roles && lookup(each.value, "enabled", true)
 
   name       = each.key
   attributes = [var.database, one(snowflake_schema.this[*].name)]
