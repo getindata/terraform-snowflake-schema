@@ -52,8 +52,7 @@ variable "roles" {
     stage_grants             = optional(list(string))
     task_grants              = optional(list(string))
     procedure_grants         = optional(list(string))
-    sequence_grants          = optional(list(string))
-    sequence_grants          = optional(list(string))
+    stream_grants            = optional(list(string))
   }))
   default = {}
 }
