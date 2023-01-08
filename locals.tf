@@ -6,7 +6,6 @@ locals {
   ), module.schema_label.delimiter) : null
 
   create_default_roles = module.this.enabled && var.create_default_roles
-  on_future_grant_key  = "_"
 
   default_roles_definition = {
     readonly = {
