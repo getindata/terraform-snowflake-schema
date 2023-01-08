@@ -6,224 +6,43 @@ locals {
   ), module.schema_label.delimiter) : null
 
   create_default_roles = module.this.enabled && var.create_default_roles
-  on_future_grant_key  = "_"
 
   default_roles_definition = {
     readonly = {
-      schema_grants = {
-        privileges = ["USAGE"]
-      }
-      table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT"]
-        }
-      }
-      external_table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      materialized_view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      file_format_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-      function_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-      stage_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-      task_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["MONITOR"]
-        }
-      }
+      schema_grants            = ["USAGE"]
+      table_grants             = ["SELECT"]
+      external_table_grants    = ["SELECT", "REFERENCES"]
+      view_grants              = ["SELECT", "REFERENCES"]
+      materialized_view_grants = ["SELECT", "REFERENCES"]
+      file_format_grants       = ["USAGE"]
+      function_grants          = ["USAGE"]
+      stage_grants             = ["USAGE"]
+      task_grants              = ["MONITOR"]
     }
     read_classified = {}
     readwrite = {
-      schema_grants = {
-        privileges = ["USAGE"]
-      }
-      table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
-          on_future  = true
-      } }
-      external_table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      materialized_view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES"]
-        }
-      }
-      file_format_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-      function_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-      stage_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "READ", "WRITE"]
-        }
-      }
-      task_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["MONITOR", "OPERATE"]
-        }
-      }
-      procedure_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE"]
-        }
-      }
-    }
-    modify = {
-      schema_grants = {
-        privileges = ["USAGE"]
-      }
-      table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD", "OWNERSHIP"]
-          on_future  = true
-      } }
-      external_table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      materialized_view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      file_format_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP", "OWNERSHIP"]
-        }
-      }
-      function_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP"]
-        }
-      }
-      stage_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "READ", "WRITE", "OWNERSHIP"]
-        }
-      }
-      task_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["MONITOR", "OPERATE", "OWNERSHIP"]
-        }
-      }
-      procedure_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP"]
-        }
-      }
-      sequence_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["OWNERSHIP"]
-        }
-      }
-      stream_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["OWNERSHIP"]
-        }
-      }
+      schema_grants            = ["USAGE"]
+      table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      external_table_grants    = ["SELECT", "REFERENCES"]
+      view_grants              = ["SELECT", "REFERENCES"]
+      materialized_view_grants = ["SELECT", "REFERENCES"]
+      file_format_grants       = ["USAGE"]
+      function_grants          = ["USAGE"]
+      stage_grants             = ["USAGE", "READ", "WRITE"]
+      task_grants              = ["MONITOR", "OPERATE"]
+      procedure_grants         = ["USAGE"]
     }
     admin = {
-      schema_grants = {
-        privileges = ["MONITOR", "CREATE TEMPORARY TABLE", "CREATE TAG", "CREATE PIPE", "CREATE PROCEDURE", "CREATE MATERIALIZED VIEW", "CREATE ROW ACCESS POLICY", "USAGE", "CREATE TABLE", "CREATE FILE FORMAT", "CREATE STAGE", "CREATE TASK", "CREATE FUNCTION", "CREATE EXTERNAL TABLE", "ADD SEARCH OPTIMIZATION", "MODIFY", "OWNERSHIP", "CREATE SEQUENCE", "CREATE MASKING POLICY", "CREATE VIEW", "CREATE STREAM"]
-      }
-      table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD", "OWNERSHIP"]
-          on_future  = true
-      } }
-      external_table_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      materialized_view_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["SELECT", "REFERENCES", "OWNERSHIP"]
-        }
-      }
-      file_format_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP", "OWNERSHIP"]
-        }
-      }
-      function_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP"]
-        }
-      }
-      stage_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "READ", "WRITE", "OWNERSHIP"]
-        }
-      }
-      task_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["MONITOR", "OPERATE", "OWNERSHIP"]
-        }
-      }
-      procedure_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["USAGE", "OWNERSHIP"]
-        }
-      }
-      sequence_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["OWNERSHIP"]
-        }
-      }
-      stream_grants = {
-        (local.on_future_grant_key) = {
-          privileges = ["OWNERSHIP"]
-        }
-      }
+      schema_grants            = ["MONITOR", "CREATE TEMPORARY TABLE", "CREATE TAG", "CREATE PIPE", "CREATE PROCEDURE", "CREATE MATERIALIZED VIEW", "CREATE ROW ACCESS POLICY", "USAGE", "CREATE TABLE", "CREATE FILE FORMAT", "CREATE STAGE", "CREATE TASK", "CREATE FUNCTION", "CREATE EXTERNAL TABLE", "ADD SEARCH OPTIMIZATION", "MODIFY", "OWNERSHIP", "CREATE SEQUENCE", "CREATE MASKING POLICY", "CREATE VIEW", "CREATE STREAM"]
+      table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      external_table_grants    = ["SELECT", "REFERENCES"]
+      view_grants              = ["SELECT", "REFERENCES"]
+      materialized_view_grants = ["SELECT", "REFERENCES"]
+      file_format_grants       = ["USAGE"]
+      function_grants          = ["USAGE"]
+      stage_grants             = ["USAGE", "READ", "WRITE"]
+      task_grants              = ["MONITOR", "OPERATE"]
+      procedure_grants         = ["USAGE"]
     }
   }
 
