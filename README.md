@@ -2,8 +2,6 @@
 ![Snowflake](https://img.shields.io/badge/-SNOWFLAKE-249edc?style=for-the-badge&logo=snowflake&logoColor=white)
 ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
 
-
-<!--- Replace repository name -->
 ![License](https://badgen.net/github/license/getindata/terraform-snowflake-schema/)
 ![Release](https://badgen.net/github/release/getindata/terraform-snowflake-schema/)
 
@@ -14,10 +12,10 @@
 
 ---
 
-Terraform module for Snowflake Schema management.
+Terraform module for Snowflake schema management.
 
-* Creates Snowflake Schema
-* Can create custom Snowflake Roles with role-to-role, role-to-user assignments
+* Creates Snowflake schema
+* Can create custom Snowflake roles with role-to-role, role-to-user assignments
 * Can create a set of default roles to simplify access management:
   * `READONLY` - granted select on all (and future) tables and views and usage on some objects in the schema
   * `READWRITE` - granted write type grants on tables and stages. Additionally, allows calling procedures and tasks in the schema.
