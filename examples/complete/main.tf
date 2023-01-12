@@ -29,6 +29,10 @@ module "this_schema" {
   is_transient        = false
   data_retention_days = 1
 
+  stages = {
+    my_stage = {}
+  }
+
   create_default_roles = true
   roles = {
     admin = {

@@ -77,6 +77,7 @@ module "snowflake_schema" {
 | <a name="input_regex_replace_chars"></a> [regex\_replace\_chars](#input\_regex\_replace\_chars) | Terraform regular expression (regex) string.<br>Characters matching the regex will be removed from the ID elements.<br>If not set, `"/[^a-zA-Z0-9-]/"` is used to remove all characters other than hyphens, letters and digits. | `string` | `null` | no |
 | <a name="input_roles"></a> [roles](#input\_roles) | Roles created in the scheme scope | <pre>map(object({<br>    enabled                  = optional(bool, true)<br>    comment                  = optional(string)<br>    role_ownership_grant     = optional(string)<br>    granted_roles            = optional(list(string))<br>    granted_to_roles         = optional(list(string))<br>    granted_to_users         = optional(list(string))<br>    schema_grants            = optional(list(string))<br>    table_grants             = optional(list(string))<br>    external_table_grants    = optional(list(string))<br>    view_grants              = optional(list(string))<br>    materialized_view_grants = optional(list(string))<br>    file_format_grants       = optional(list(string))<br>    function_grants          = optional(list(string))<br>    stage_grants             = optional(list(string))<br>    task_grants              = optional(list(string))<br>    procedure_grants         = optional(list(string))<br>    stream_grants            = optional(list(string))<br>  }))</pre> | `{}` | no |
 | <a name="input_stage"></a> [stage](#input\_stage) | ID element. Usually used to indicate role, e.g. 'prod', 'staging', 'source', 'build', 'test', 'deploy', 'release' | `string` | `null` | no |
+| <a name="input_stages"></a> [stages](#input\_stages) | Stages to be created in the schema | <pre>map(object({<br>    enabled              = optional(bool, true)<br>    descriptor_name      = optional(string, "snowflake-stage")<br>    aws_external_id      = optional(string)<br>    comment              = optional(string)<br>    copy_options         = optional(string)<br>    credentials          = optional(string)<br>    directory            = optional(string)<br>    encryption           = optional(string)<br>    file_format          = optional(string)<br>    snowflake_iam_user   = optional(string)<br>    storage_integration  = optional(string)<br>    url                  = optional(string)<br>    create_default_roles = optional(bool)<br>    roles = optional(map(object({<br>      enabled              = optional(bool, true)<br>      comment              = optional(string)<br>      role_ownership_grant = optional(string)<br>      granted_roles        = optional(list(string))<br>      granted_to_roles     = optional(list(string))<br>      granted_to_users     = optional(list(string))<br>      stage_grants         = optional(list(string))<br>    })), {})<br>  }))</pre> | `{}` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | Additional tags (e.g. `{'BusinessUnit': 'XYZ'}`).<br>Neither the tag keys nor the tag values will be modified by this module. | `map(string)` | `{}` | no |
 | <a name="input_tenant"></a> [tenant](#input\_tenant) | ID element \_(Rarely used, not included by default)\_. A customer identifier, indicating who this instance of a resource is for | `string` | `null` | no |
 
@@ -88,6 +89,7 @@ module "snowflake_schema" {
 | <a name="module_schema_label"></a> [schema\_label](#module\_schema\_label) | cloudposse/label/null | 0.25.0 |
 | <a name="module_snowflake_custom_role"></a> [snowflake\_custom\_role](#module\_snowflake\_custom\_role) | getindata/role/snowflake | 1.0.3 |
 | <a name="module_snowflake_default_role"></a> [snowflake\_default\_role](#module\_snowflake\_default\_role) | getindata/role/snowflake | 1.0.3 |
+| <a name="module_snowflake_stage"></a> [snowflake\_stage](#module\_snowflake\_stage) | getindata/stage/snowflake | 1.0.0 |
 | <a name="module_this"></a> [this](#module\_this) | cloudposse/label/null | 0.25.0 |
 
 ## Outputs
@@ -100,6 +102,7 @@ module "snowflake_schema" {
 | <a name="output_is_transient"></a> [is\_transient](#output\_is\_transient) | Is schema transient |
 | <a name="output_name"></a> [name](#output\_name) | Name of the schema |
 | <a name="output_roles"></a> [roles](#output\_roles) | Snowflake Roles |
+| <a name="output_stages"></a> [stages](#output\_stages) | Schema stages |
 
 ## Providers
 
