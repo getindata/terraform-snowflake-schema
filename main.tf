@@ -20,6 +20,35 @@ resource "snowflake_schema" "this" {
   is_managed          = var.is_managed
 }
 
+module "snowflake_stage" {
+  for_each = var.stages
+
+  source  = "getindata/stage/snowflake"
+  version = "1.0.0"
+  context = module.this.context
+  enabled = module.this.enabled && each.value.enabled
+
+  name            = each.key
+  descriptor_name = each.value.descriptor_name
+
+  schema   = one(snowflake_schema.this[*].name)
+  database = one(snowflake_schema.this[*].database)
+
+  aws_external_id     = each.value.aws_external_id
+  comment             = each.value.comment
+  copy_options        = each.value.copy_options
+  credentials         = each.value.credentials
+  directory           = each.value.directory
+  encryption          = each.value.encryption
+  file_format         = each.value.file_format
+  snowflake_iam_user  = each.value.snowflake_iam_user
+  storage_integration = each.value.storage_integration
+  url                 = each.value.url
+
+  create_default_roles = coalesce(each.value.create_default_roles, var.create_default_roles)
+  roles                = each.value.roles
+}
+
 module "snowflake_default_role" {
   for_each = local.default_roles
 

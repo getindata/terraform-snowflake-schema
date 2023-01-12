@@ -57,6 +57,35 @@ variable "roles" {
   default = {}
 }
 
+variable "stages" {
+  description = "Stages to be created in the schema"
+  type = map(object({
+    enabled              = optional(bool, true)
+    descriptor_name      = optional(string, "snowflake-stage")
+    aws_external_id      = optional(string)
+    comment              = optional(string)
+    copy_options         = optional(string)
+    credentials          = optional(string)
+    directory            = optional(string)
+    encryption           = optional(string)
+    file_format          = optional(string)
+    snowflake_iam_user   = optional(string)
+    storage_integration  = optional(string)
+    url                  = optional(string)
+    create_default_roles = optional(bool)
+    roles = optional(map(object({
+      enabled              = optional(bool, true)
+      comment              = optional(string)
+      role_ownership_grant = optional(string)
+      granted_roles        = optional(list(string))
+      granted_to_roles     = optional(list(string))
+      granted_to_users     = optional(list(string))
+      stage_grants         = optional(list(string))
+    })), {})
+  }))
+  default = {}
+}
+
 variable "descriptor_name" {
   description = "Name of the descriptor used to form a resource name"
   type        = string

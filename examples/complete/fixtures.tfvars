@@ -14,6 +14,10 @@ descriptor_formats = {
     labels = ["name", "attributes"]
     format = "%v_%v"
   }
+  snowflake-stage = {
+    labels = ["name", "attributes"]
+    format = "%v_%v"
+  }
 }
 
 tags = {

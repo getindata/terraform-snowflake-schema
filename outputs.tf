@@ -13,7 +13,6 @@ output "is_transient" {
   value       = one(snowflake_schema.this[*].is_transient)
 }
 
-
 output "is_managed" {
   description = "Is schema managed"
   value       = one(snowflake_schema.this[*].is_managed)
@@ -22,6 +21,11 @@ output "is_managed" {
 output "database" {
   description = "Database where the schema is deployed to"
   value       = one(snowflake_schema.this[*].database)
+}
+
+output "stages" {
+  description = "Schema stages"
+  value       = module.snowflake_stage
 }
 
 output "roles" {
