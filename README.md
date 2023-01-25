@@ -67,7 +67,7 @@ module "snowflake_schema" {
 
 > The workaround is currently supported for tables, external tables, views and materialized views. 
 
-#### Manually xecuting `GRANT ON ALL` in Snowflake
+#### Manually executing `GRANT ON ALL` in Snowflake
 The workaround above can attempt to create a huge number of resources if the schema contains a significant number of objects.
 In that case this module will also generate `GRANT ON ALL` statments according to the role definitions, 
 which can be executed manually in Snowflake account.
