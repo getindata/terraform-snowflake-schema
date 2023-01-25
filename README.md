@@ -69,7 +69,7 @@ module "snowflake_schema" {
 
 #### Manually executing `GRANT ON ALL` in Snowflake
 The workaround above can attempt to create a huge number of resources if the schema contains a significant number of objects.
-In that case this module will also generate `GRANT ON ALL` statments according to the role definitions, 
+In that case this module will also generate `GRANT ON ALL` statements according to the role definitions, 
 which can be executed manually in Snowflake account.
 
 ## EXAMPLES
