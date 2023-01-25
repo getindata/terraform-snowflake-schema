@@ -9,12 +9,12 @@ module "schema_label" {
 }
 
 resource "snowflake_schema" "this" {
-  count = module.this.enabled ? 1 : 0
+  count = module.this.enabled && var.skip_schema_creation == false ? 1 : 0
 
   name    = local.name_from_descriptor
   comment = var.comment
 
-  database            = var.database
+  database            = local.database
   data_retention_days = var.data_retention_days
   is_transient        = var.is_transient
   is_managed          = var.is_managed
@@ -31,8 +31,8 @@ module "snowflake_stage" {
   name            = each.key
   descriptor_name = each.value.descriptor_name
 
-  schema   = one(snowflake_schema.this[*].name)
-  database = one(snowflake_schema.this[*].database)
+  schema   = local.schema
+  database = local.database
 
   aws_external_id     = each.value.aws_external_id
   comment             = each.value.comment
@@ -55,15 +55,15 @@ module "snowflake_default_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = local.create_default_roles && lookup(each.value, "enabled", true)
+  enabled = local.create_default_roles && each.value.enabled
 
   name       = each.key
-  attributes = [var.database, one(snowflake_schema.this[*].name)]
+  attributes = [local.database, local.schema]
 
-  role_ownership_grant = lookup(each.value, "role_ownership_grant", "SYSADMIN")
-  granted_to_users     = lookup(each.value, "granted_to_users", [])
-  granted_to_roles     = lookup(each.value, "granted_to_roles", [])
-  granted_roles        = lookup(each.value, "granted_roles", [])
+  role_ownership_grant = each.value.role_ownership_grant
+  granted_to_users     = each.value.granted_to_users
+  granted_to_roles     = each.value.granted_to_roles
+  granted_roles        = each.value.granted_roles
 }
 
 
@@ -73,167 +73,227 @@ module "snowflake_custom_role" {
   source  = "getindata/role/snowflake"
   version = "1.0.3"
   context = module.this.context
-  enabled = module.this.enabled && lookup(each.value, "enabled", true)
+  enabled = module.this.enabled && each.value.enabled
 
   name       = each.key
-  attributes = [var.database, one(snowflake_schema.this[*].name)]
+  attributes = [local.database, local.schema]
 
-  role_ownership_grant = lookup(each.value, "role_ownership_grant", "SYSADMIN")
-  granted_to_users     = lookup(each.value, "granted_to_users", [])
-  granted_to_roles     = lookup(each.value, "granted_to_roles", [])
-  granted_roles        = lookup(each.value, "granted_roles", [])
+  role_ownership_grant = each.value.role_ownership_grant
+  granted_to_users     = each.value.granted_to_users
+  granted_to_roles     = each.value.granted_to_roles
+  granted_roles        = each.value.granted_roles
 }
 
 resource "snowflake_schema_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "schema_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.schema_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   privilege     = each.key
   roles         = each.value
+}
+
+################################################################
+
+data "snowflake_tables" "this" {
+  count = module.this.enabled ? 1 : 0
+
+  database = local.database
+  schema   = local.schema
 }
 
 resource "snowflake_table_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "table_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = local.skip_schema_creation ? local.table_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
+}
+
+#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
+#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
+resource "snowflake_table_grant" "existing" {
+  for_each = local.skip_schema_creation ? local.table_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  table_name    = each.value.table_name
+  privilege     = each.value.privilege
+  roles         = each.value.roles
+}
+
+################################################################
+
+
+################################################################
+
+data "snowflake_external_tables" "this" {
+  count = local.skip_schema_creation ? 1 : 0
+
+  database = local.database
+  schema   = local.schema
 }
 
 resource "snowflake_external_table_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "external_table_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.external_table_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
+}
+
+#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
+#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
+resource "snowflake_external_table_grant" "existing" {
+  for_each = local.skip_schema_creation ? local.external_table_grants_on_existing : {}
+
+  database_name       = local.database
+  schema_name         = local.schema
+  external_table_name = each.value.external_table_name
+  privilege           = each.value.privilege
+  roles               = each.value.roles
+}
+
+################################################################
+
+
+################################################################
+
+data "snowflake_views" "this" {
+  count = local.skip_schema_creation ? 1 : 0
+
+  database = local.database
+  schema   = local.schema
 }
 
 resource "snowflake_view_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "view_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.view_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
+}
+
+#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
+#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
+resource "snowflake_view_grant" "existing" {
+  for_each = local.skip_schema_creation ? local.view_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  view_name     = each.value.view_name
+  privilege     = each.value.privilege
+  roles         = each.value.roles
+}
+
+################################################################
+
+
+
+################################################################
+
+data "snowflake_materialized_views" "this" {
+  count = local.skip_schema_creation ? 1 : 0
+
+  database = local.database
+  schema   = local.schema
 }
 
 resource "snowflake_materialized_view_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "materialized_view_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.materialized_view_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
-resource "snowflake_file_format_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "file_format_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
+#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
+resource "snowflake_materialized_view_grant" "existing" {
+  for_each = local.skip_schema_creation ? local.materialized_view_grants_on_existing : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name          = local.database
+  schema_name            = local.schema
+  materialized_view_name = each.value.materialized_view_name
+  privilege              = each.value.privilege
+  roles                  = each.value.roles
+}
+
+################################################################
+
+resource "snowflake_file_format_grant" "this" {
+  for_each = module.this.enabled ? local.file_format_grants : {}
+
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_function_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "function_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.function_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_stage_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "stage_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.stage_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_task_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "task_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.task_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_procedure_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "procedure_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.procedure_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_sequence_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "sequence_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.sequence_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
 }
 
 resource "snowflake_stream_grant" "this" {
-  for_each = module.this.enabled ? transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
-    lookup(local.roles_definition[role_name], "stream_grants", [])
-    if lookup(local.roles_definition[role_name], "enabled", true)
-  }) : {}
+  for_each = module.this.enabled ? local.stream_grants : {}
 
-  database_name = var.database
-  schema_name   = one(snowflake_schema.this[*].name)
+  database_name = local.database
+  schema_name   = local.schema
   on_future     = true
   privilege     = each.key
   roles         = each.value
