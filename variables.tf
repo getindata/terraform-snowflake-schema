@@ -1,3 +1,9 @@
+variable "skip_schema_creation" {
+  description = "Should schema creation be skipped but allow all other resources to be created. Useful if schema already exsists but you want to add e.g. access roles"
+  type        = bool
+  default     = false
+}
+
 variable "database" {
   description = "Database where the schema should be created"
   type        = string
@@ -36,23 +42,25 @@ variable "create_default_roles" {
 variable "roles" {
   description = "Roles created in the scheme scope"
   type = map(object({
-    enabled                  = optional(bool, true)
-    comment                  = optional(string)
-    role_ownership_grant     = optional(string)
-    granted_roles            = optional(list(string))
-    granted_to_roles         = optional(list(string))
-    granted_to_users         = optional(list(string))
-    schema_grants            = optional(list(string))
-    table_grants             = optional(list(string))
-    external_table_grants    = optional(list(string))
-    view_grants              = optional(list(string))
-    materialized_view_grants = optional(list(string))
-    file_format_grants       = optional(list(string))
-    function_grants          = optional(list(string))
-    stage_grants             = optional(list(string))
-    task_grants              = optional(list(string))
-    procedure_grants         = optional(list(string))
-    stream_grants            = optional(list(string))
+    enabled                        = optional(bool, true)
+    comment                        = optional(string)
+    role_ownership_grant           = optional(string)
+    granted_roles                  = optional(list(string))
+    granted_to_roles               = optional(list(string))
+    granted_to_users               = optional(list(string))
+    add_grants_to_existing_objects = optional(bool)
+    schema_grants                  = optional(list(string))
+    table_grants                   = optional(list(string))
+    external_table_grants          = optional(list(string))
+    view_grants                    = optional(list(string))
+    materialized_view_grants       = optional(list(string))
+    file_format_grants             = optional(list(string))
+    function_grants                = optional(list(string))
+    stage_grants                   = optional(list(string))
+    task_grants                    = optional(list(string))
+    procedure_grants               = optional(list(string))
+    sequence_grants                = optional(list(string))
+    stream_grants                  = optional(list(string))
   }))
   default = {}
 }
