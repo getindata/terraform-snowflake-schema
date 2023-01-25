@@ -42,7 +42,7 @@ module "snowflake_schema" {
 
 ### Granting access to existing objects
 
-Since Snowflake provider does not allow setting`GRANT ON ALL` on any object, 
+Since Snowflake provider does not allow setting `GRANT ON ALL` on any object, 
 which is useful for adding permissions to existing objects ([GitHub issue](https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250)),
 this module adds a workaround for this by reading existing objects using Terraform data sources.
 
