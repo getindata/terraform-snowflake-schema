@@ -18,9 +18,10 @@ Terraform module for Snowflake schema management.
 * Can create custom Snowflake roles with role-to-role, role-to-user assignments
 * Can create a set of default roles to simplify access management:
   * `READONLY` - granted select on all (and future) tables and views and usage on some objects in the schema
-  * `READWRITE` - granted write type grants on tables and stages. Additionally, allows calling procedures and tasks in the schema.
-  * `READ_CLASSIFIED` - marker role used to access classified data. Useful for checking secondary roles in masking policies.
-  * `ADMIN` - Full access, including setting schema options like `data_retention_days`.
+  * `READ_CLASSIFIED` - marker role used to access classified data. Useful for checking secondary roles in masking policies
+  * `READWRITE` - granted write type grants on tables and stages. Additionally, allows calling procedures and tasks in the schema
+  * `TRANSFORMER` - Allows creating tables and views on top of the `READWRITE` role privileges
+  * `ADMIN` - Full access, including setting schema options like `data_retention_days`
 
 ## USAGE
 
