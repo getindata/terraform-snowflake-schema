@@ -103,7 +103,7 @@ data "snowflake_tables" "this" {
 }
 
 resource "snowflake_table_grant" "this" {
-  for_each = local.skip_schema_creation ? local.table_grants : {}
+  for_each = module.this.enabled ? local.table_grants : {}
 
   database_name = local.database
   schema_name   = local.schema
