@@ -5,10 +5,10 @@
 ![License](https://badgen.net/github/license/getindata/terraform-snowflake-schema/)
 ![Release](https://badgen.net/github/release/getindata/terraform-snowflake-schema/)
 
-<table align="center"><tr><td align="center" width="9999">
+<div align="center">
 <img height="150" src="https://getindata.com/img/logo.svg">
-<h3 align="center">We help companies turn their data into assets</h3>
-</td></tr></table>
+<center><h3 align="center">We help companies turn their data into assets</center>
+</div>
 
 ---
 
