@@ -7,7 +7,7 @@
 
 <div align="center">
 <img height="150" src="https://getindata.com/img/logo.svg">
-<center><h3 align="center">We help companies turn their data into assets</center>
+<center><h3 align="center">We help companies turn their data into assets</h3></center>
 </div>
 
 ---
