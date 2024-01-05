@@ -69,16 +69,16 @@ locals {
       procedure_grants         = ["USAGE"]
     }
     admin = {
-      schema_grants            = ["MONITOR", "CREATE TEMPORARY TABLE", "CREATE TAG", "CREATE PIPE", "CREATE PROCEDURE", "CREATE MATERIALIZED VIEW", "CREATE ROW ACCESS POLICY", "USAGE", "CREATE TABLE", "CREATE FILE FORMAT", "CREATE STAGE", "CREATE TASK", "CREATE FUNCTION", "CREATE EXTERNAL TABLE", "ADD SEARCH OPTIMIZATION", "MODIFY", "CREATE SEQUENCE", "CREATE MASKING POLICY", "CREATE VIEW", "CREATE STREAM"]
-      table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
-      external_table_grants    = ["SELECT", "REFERENCES"]
-      view_grants              = ["SELECT", "REFERENCES"]
-      materialized_view_grants = ["SELECT", "REFERENCES"]
-      file_format_grants       = ["USAGE"]
-      function_grants          = ["USAGE"]
-      stage_grants             = ["USAGE", "READ", "WRITE"]
-      task_grants              = ["MONITOR", "OPERATE"]
-      procedure_grants         = ["USAGE"]
+      schema_grants            = ["ALL PRIVILEGES"]
+      table_grants             = ["ALL PRIVILEGES"]
+      external_table_grants    = ["ALL PRIVILEGES"]
+      view_grants              = ["ALL PRIVILEGES"]
+      materialized_view_grants = ["ALL PRIVILEGES"]
+      file_format_grants       = ["ALL PRIVILEGES"]
+      function_grants          = ["ALL PRIVILEGES"]
+      stage_grants             = ["ALL PRIVILEGES"]
+      task_grants              = ["ALL PRIVILEGES"]
+      procedure_grants         = ["ALL PRIVILEGES"]
     }
   }
 
