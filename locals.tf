@@ -19,6 +19,7 @@ locals {
     add_grants_to_existing_objects = false
     schema_grants                  = []
     table_grants                   = []
+    dynamic_table_grants           = []
     external_table_grants          = []
     view_grants                    = []
     materialized_view_grants       = []
@@ -35,6 +36,7 @@ locals {
     readonly = {
       schema_grants            = ["USAGE"]
       table_grants             = ["SELECT"]
+      dynamic_table_grants     = ["SELECT"]
       external_table_grants    = ["SELECT", "REFERENCES"]
       view_grants              = ["SELECT", "REFERENCES"]
       materialized_view_grants = ["SELECT", "REFERENCES"]
@@ -47,6 +49,7 @@ locals {
     readwrite = {
       schema_grants            = ["USAGE"]
       table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      dynamic_table_grants     = ["SELECT"]
       external_table_grants    = ["SELECT", "REFERENCES"]
       view_grants              = ["SELECT", "REFERENCES"]
       materialized_view_grants = ["SELECT", "REFERENCES"]
@@ -59,6 +62,7 @@ locals {
     transformer = {
       schema_grants            = ["CREATE TEMPORARY TABLE", "CREATE TAG", "CREATE PIPE", "CREATE PROCEDURE", "CREATE MATERIALIZED VIEW", "USAGE", "CREATE TABLE", "CREATE FILE FORMAT", "CREATE STAGE", "CREATE TASK", "CREATE FUNCTION", "CREATE EXTERNAL TABLE", "CREATE SEQUENCE", "CREATE VIEW", "CREATE STREAM"]
       table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      dynamic_table_grants     = ["ALL PRIVILEGES"]
       external_table_grants    = ["SELECT", "REFERENCES"]
       view_grants              = ["SELECT", "REFERENCES"]
       materialized_view_grants = ["SELECT", "REFERENCES"]
@@ -71,6 +75,7 @@ locals {
     admin = {
       schema_grants            = ["ALL PRIVILEGES"]
       table_grants             = ["ALL PRIVILEGES"]
+      dynamic_table_grants     = ["ALL PRIVILEGES"]
       external_table_grants    = ["ALL PRIVILEGES"]
       view_grants              = ["ALL PRIVILEGES"]
       materialized_view_grants = ["ALL PRIVILEGES"]
@@ -129,21 +134,21 @@ locals {
       if local.roles_definition[role_name].enabled
     }
   )
-  table_grants_on_existing = merge(
-    [
-      for table in coalesce(one(data.snowflake_tables.this[*].tables), []) :
-      {
-        for privilege, roles in transpose({
-          for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].table_grants
-          if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
-          }) : "${table.name}/${privilege}" => {
-          privilege  = privilege
-          table_name = table.name
-          roles      = roles
-        }
-      }
-    ]...
+  table_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].table_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
   )
+
+  dynamic_table_grants = {
+    for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].dynamic_table_grants
+    if local.roles_definition[role_name].enabled && length(local.roles_definition[role_name].dynamic_table_grants) > 0
+  }
+  dynamic_table_grants_on_existing = {
+    for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].dynamic_table_grants
+    if local.roles_definition[role_name].enabled && length(local.roles_definition[role_name].dynamic_table_grants) > 0 && local.roles_definition[role_name].add_grants_to_existing_objects
+  }
 
   external_table_grants = transpose(
     {
@@ -151,42 +156,21 @@ locals {
       if local.roles_definition[role_name].enabled
     }
   )
-  external_table_grants_on_existing = merge(
-    [
-      for table in coalesce(one(data.snowflake_external_tables.this[*].external_tables), []) :
-      {
-        for privilege, roles in transpose({
-          for role_name, role in local.roles : local.roles[role_name].name =>
-          local.roles_definition[role_name].external_table_grants
-          if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
-          }) : "${table.name}/${privilege}" => {
-          privilege           = privilege
-          external_table_name = table.name
-          roles               = roles
-        }
-      }
-    ]...
+  external_table_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].external_table_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
   )
 
   view_grants = transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
     local.roles_definition[role_name].view_grants
     if local.roles_definition[role_name].enabled
   })
-  view_grants_on_existing = merge(
-    [
-      for view in coalesce(one(data.snowflake_views.this[*].views), []) :
-      {
-        for privilege, roles in transpose({
-          for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].view_grants
-          if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
-          }) : "${view.name}/${privilege}" => {
-          privilege = privilege
-          view_name = view.name
-          roles     = roles
-        }
-      }
-    ]...
-  )
+  view_grants_on_existing = transpose({ for role_name, role in local.roles : local.roles[role_name].name =>
+    local.roles_definition[role_name].view_grants
+    if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+  })
 
   materialized_view_grants = transpose(
     {
@@ -194,20 +178,11 @@ locals {
       if local.roles_definition[role_name].enabled
     }
   )
-  materialized_view_grants_on_existing = merge(
-    [
-      for materialized_view in coalesce(one(data.snowflake_materialized_views.this[*].materialized_views), []) :
-      {
-        for privilege, roles in transpose({
-          for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].materialized_view_grants
-          if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
-          }) : "${materialized_view.name}/${privilege}" => {
-          privilege              = privilege
-          materialized_view_name = materialized_view.name
-          roles                  = roles
-        }
-      }
-    ]...
+  materialized_view_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].materialized_view_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
   )
 
   file_format_grants = transpose(
@@ -216,81 +191,89 @@ locals {
       if local.roles_definition[role_name].enabled
     }
   )
+  file_format_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].file_format_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   function_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].function_grants
       if local.roles_definition[role_name].enabled
     }
   )
+  function_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].function_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   stage_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].stage_grants
       if local.roles_definition[role_name].enabled
     }
   )
+  stage_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].stage_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   task_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].task_grants
       if local.roles_definition[role_name].enabled
     }
   )
+  task_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].task_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   procedure_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].procedure_grants
       if local.roles_definition[role_name].enabled
     }
   )
+  procedure_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].procedure_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   sequence_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].sequence_grants
       if local.roles_definition[role_name].enabled
     }
   )
+  sequence_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].sequence_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
+  )
+
   stream_grants = transpose(
     {
       for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].stream_grants
       if local.roles_definition[role_name].enabled
     }
   )
-
-  roles_grant_on_all_statements = local.skip_schema_creation ? join("\n", concat(
-    [
-      for role_name, role in local.roles_definition :
-      format(
-        "GRANT %s ON ALL TABLES IN SCHEMA %s.%s TO ROLE %s;",
-        join(", ", role.table_grants), local.database, local.schema, local.roles[role_name].name
-      )
-      if length(role.table_grants) > 0
-    ],
-    [
-      for role_name, role in local.roles_definition :
-      format(
-        "GRANT %s ON ALL EXTERNAL TABLES IN SCHEMA %s.%s TO ROLE %s;",
-        join(", ", role.external_table_grants), local.database, local.schema, local.roles[role_name].name
-      )
-      if length(role.external_table_grants) > 0
-    ],
-    [
-      for role_name, role in local.roles_definition :
-      format(
-        "GRANT %s ON ALL VIEWS IN SCHEMA %s.%s TO ROLE %s;",
-        join(", ", role.view_grants), local.database, local.schema, local.roles[role_name].name
-      )
-      if length(role.view_grants) > 0
-    ],
-    [
-      for role_name, role in local.roles_definition :
-      format(
-        "GRANT %s ON ALL MATERIALIZED VIEWS IN SCHEMA %s.%s TO ROLE %s;",
-        join(", ", role.materialized_view_grants), local.database, local.schema, local.roles[role_name].name
-      )
-      if length(role.materialized_view_grants) > 0
-    ],
-  )) : null
-
-  roles_revoke_on_all_statements = (local.skip_schema_creation
-    ? replace(local.roles_grant_on_all_statements, "GRANT", "REVOKE")
-    : null
+  stream_grants_on_existing = transpose(
+    {
+      for role_name, role in local.roles : local.roles[role_name].name => local.roles_definition[role_name].stream_grants
+      if local.roles_definition[role_name].enabled && local.roles_definition[role_name].add_grants_to_existing_objects
+    }
   )
 }
 

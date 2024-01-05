@@ -51,6 +51,7 @@ variable "roles" {
     add_grants_to_existing_objects = optional(bool)
     schema_grants                  = optional(list(string))
     table_grants                   = optional(list(string))
+    dynamic_table_grants           = optional(list(string))
     external_table_grants          = optional(list(string))
     view_grants                    = optional(list(string))
     materialized_view_grants       = optional(list(string))
