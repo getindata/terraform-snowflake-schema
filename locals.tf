@@ -6,7 +6,6 @@ locals {
   ), module.schema_label.delimiter) : null
 
   create_default_roles = module.this.enabled && var.create_default_roles
-  skip_schema_creation = module.this.enabled && var.skip_schema_creation
 
   #This needs to be the same as an object in roles variable
   role_template = {
