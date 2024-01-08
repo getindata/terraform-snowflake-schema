@@ -53,7 +53,7 @@ module "snowflake_default_role" {
   for_each = local.default_roles
 
   source  = "getindata/role/snowflake"
-  version = "1.0.3"
+  version = "1.3.0"
   context = module.this.context
   enabled = local.create_default_roles && each.value.enabled
 
@@ -71,7 +71,7 @@ module "snowflake_custom_role" {
   for_each = local.custom_roles
 
   source  = "getindata/role/snowflake"
-  version = "1.0.3"
+  version = "1.3.0"
   context = module.this.context
   enabled = module.this.enabled && each.value.enabled
 
@@ -95,13 +95,6 @@ resource "snowflake_schema_grant" "this" {
 
 ################################################################
 
-data "snowflake_tables" "this" {
-  count = module.this.enabled ? 1 : 0
-
-  database = local.database
-  schema   = local.schema
-}
-
 resource "snowflake_table_grant" "this" {
   for_each = module.this.enabled ? local.table_grants : {}
 
@@ -112,29 +105,53 @@ resource "snowflake_table_grant" "this" {
   roles         = each.value
 }
 
-#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
-#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
 resource "snowflake_table_grant" "existing" {
-  for_each = local.skip_schema_creation ? local.table_grants_on_existing : {}
+  for_each = module.this.enabled ? local.table_grants_on_existing : {}
 
   database_name = local.database
   schema_name   = local.schema
-  table_name    = each.value.table_name
-  privilege     = each.value.privilege
-  roles         = each.value.roles
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
 }
 
 ################################################################
 
+################################################################
+
+resource "snowflake_grant_privileges_to_role" "dynamic_table" {
+  for_each = module.this.enabled ? local.dynamic_table_grants : {}
+
+  privileges     = each.value != ["ALL PRIVILEGES"] ? each.value : null
+  all_privileges = each.value == ["ALL PRIVILEGES"] ? true : null
+  role_name      = each.key
+
+  on_schema_object {
+    future {
+      object_type_plural = "DYNAMIC TABLES"
+      in_schema          = join(".", [local.database, local.schema])
+    }
+  }
+}
+
+resource "snowflake_grant_privileges_to_role" "existing_dynamic_table" {
+  for_each = module.this.enabled ? local.dynamic_table_grants_on_existing : {}
+
+  privileges     = each.value != ["ALL PRIVILEGES"] ? each.value : null
+  all_privileges = each.value == ["ALL PRIVILEGES"] ? true : null
+  role_name      = each.key
+
+  on_schema_object {
+    all {
+      object_type_plural = "DYNAMIC TABLES"
+      in_schema          = join(".", [local.database, local.schema])
+    }
+  }
+}
 
 ################################################################
 
-data "snowflake_external_tables" "this" {
-  count = local.skip_schema_creation ? 1 : 0
-
-  database = local.database
-  schema   = local.schema
-}
+################################################################
 
 resource "snowflake_external_table_grant" "this" {
   for_each = module.this.enabled ? local.external_table_grants : {}
@@ -146,29 +163,20 @@ resource "snowflake_external_table_grant" "this" {
   roles         = each.value
 }
 
-#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
-#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
 resource "snowflake_external_table_grant" "existing" {
-  for_each = local.skip_schema_creation ? local.external_table_grants_on_existing : {}
+  for_each = module.this.enabled ? local.external_table_grants_on_existing : {}
 
-  database_name       = local.database
-  schema_name         = local.schema
-  external_table_name = each.value.external_table_name
-  privilege           = each.value.privilege
-  roles               = each.value.roles
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
 }
 
 ################################################################
 
 
 ################################################################
-
-data "snowflake_views" "this" {
-  count = local.skip_schema_creation ? 1 : 0
-
-  database = local.database
-  schema   = local.schema
-}
 
 resource "snowflake_view_grant" "this" {
   for_each = module.this.enabled ? local.view_grants : {}
@@ -180,16 +188,14 @@ resource "snowflake_view_grant" "this" {
   roles         = each.value
 }
 
-#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
-#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
 resource "snowflake_view_grant" "existing" {
-  for_each = local.skip_schema_creation ? local.view_grants_on_existing : {}
+  for_each = module.this.enabled ? local.view_grants_on_existing : {}
 
   database_name = local.database
   schema_name   = local.schema
-  view_name     = each.value.view_name
-  privilege     = each.value.privilege
-  roles         = each.value.roles
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
 }
 
 ################################################################
@@ -197,13 +203,6 @@ resource "snowflake_view_grant" "existing" {
 
 
 ################################################################
-
-data "snowflake_materialized_views" "this" {
-  count = local.skip_schema_creation ? 1 : 0
-
-  database = local.database
-  schema   = local.schema
-}
 
 resource "snowflake_materialized_view_grant" "this" {
   for_each = module.this.enabled ? local.materialized_view_grants : {}
@@ -215,16 +214,14 @@ resource "snowflake_materialized_view_grant" "this" {
   roles         = each.value
 }
 
-#This is done due to lack of GRANT ON ALL statement in the Terraform Snowflake provider
-#https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
 resource "snowflake_materialized_view_grant" "existing" {
-  for_each = local.skip_schema_creation ? local.materialized_view_grants_on_existing : {}
+  for_each = module.this.enabled ? local.materialized_view_grants_on_existing : {}
 
-  database_name          = local.database
-  schema_name            = local.schema
-  materialized_view_name = each.value.materialized_view_name
-  privilege              = each.value.privilege
-  roles                  = each.value.roles
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
 }
 
 ################################################################
@@ -239,6 +236,22 @@ resource "snowflake_file_format_grant" "this" {
   roles         = each.value
 }
 
+resource "snowflake_file_format_grant" "existing" {
+  for_each = module.this.enabled ? local.file_format_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
+
 resource "snowflake_function_grant" "this" {
   for_each = module.this.enabled ? local.function_grants : {}
 
@@ -248,6 +261,22 @@ resource "snowflake_function_grant" "this" {
   privilege     = each.key
   roles         = each.value
 }
+
+resource "snowflake_function_grant" "existing" {
+  for_each = module.this.enabled ? local.function_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
 
 resource "snowflake_stage_grant" "this" {
   for_each = module.this.enabled ? local.stage_grants : {}
@@ -259,6 +288,22 @@ resource "snowflake_stage_grant" "this" {
   roles         = each.value
 }
 
+resource "snowflake_stage_grant" "existing" {
+  for_each = module.this.enabled ? local.stage_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
+
 resource "snowflake_task_grant" "this" {
   for_each = module.this.enabled ? local.task_grants : {}
 
@@ -268,6 +313,22 @@ resource "snowflake_task_grant" "this" {
   privilege     = each.key
   roles         = each.value
 }
+
+resource "snowflake_task_grant" "existing" {
+  for_each = module.this.enabled ? local.task_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
 
 resource "snowflake_procedure_grant" "this" {
   for_each = module.this.enabled ? local.procedure_grants : {}
@@ -279,6 +340,22 @@ resource "snowflake_procedure_grant" "this" {
   roles         = each.value
 }
 
+resource "snowflake_procedure_grant" "existing" {
+  for_each = module.this.enabled ? local.procedure_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
+
 resource "snowflake_sequence_grant" "this" {
   for_each = module.this.enabled ? local.sequence_grants : {}
 
@@ -289,12 +366,38 @@ resource "snowflake_sequence_grant" "this" {
   roles         = each.value
 }
 
+resource "snowflake_sequence_grant" "existing" {
+  for_each = module.this.enabled ? local.sequence_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+################################################################
+
+
+
+################################################################
+
 resource "snowflake_stream_grant" "this" {
   for_each = module.this.enabled ? local.stream_grants : {}
 
   database_name = local.database
   schema_name   = local.schema
   on_future     = true
+  privilege     = each.key
+  roles         = each.value
+}
+
+resource "snowflake_stream_grant" "existing" {
+  for_each = module.this.enabled ? local.stream_grants_on_existing : {}
+
+  database_name = local.database
+  schema_name   = local.schema
+  on_all        = true
   privilege     = each.key
   roles         = each.value
 }

@@ -32,25 +32,3 @@ output "roles" {
   description = "Snowflake Roles"
   value       = local.roles
 }
-
-output "roles_grant_on_all_statements" {
-  description = <<EOT
-    Generates GRANT ON ALL type of statements according to provided role definitions.
-    This is useful if the module is created with `skip_schema_creation` option in cases like zero-copy clone
-    and all access roles are meant to be created.
-    Related Snowflake provider GitHub issue:
-    https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
-  EOT
-  value       = local.roles_grant_on_all_statements
-}
-
-output "roles_revoke_on_all_statements" {
-  description = <<EOT
-    Generates REVOKE ON ALL type of statements according to provided role definitions.
-    This is useful if the module is created with `skip_schema_creation` option in cases like zero-copy clone
-    and all access roles are meant to be created.
-    Related Snowflake provider GitHub issue:
-    https://github.com/Snowflake-Labs/terraform-provider-snowflake/issues/250
-  EOT
-  value       = local.roles_revoke_on_all_statements
-}
