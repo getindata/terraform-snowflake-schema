@@ -39,6 +39,12 @@ variable "create_default_roles" {
   default     = false
 }
 
+variable "add_grants_to_existing_objects" {
+  description = "Whether grants to existing objects should be added"
+  type        = bool
+  default     = false
+}
+
 variable "roles" {
   description = "Roles created in the scheme scope"
   type = map(object({

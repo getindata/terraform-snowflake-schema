@@ -15,7 +15,7 @@ locals {
     granted_roles                  = []
     granted_to_roles               = []
     granted_to_users               = []
-    add_grants_to_existing_objects = false
+    add_grants_to_existing_objects = var.add_grants_to_existing_objects
     schema_grants                  = []
     table_grants                   = []
     dynamic_table_grants           = []
