@@ -47,27 +47,27 @@ locals {
     read_classified = {}
     readwrite = {
       schema_grants            = ["USAGE"]
-      table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      table_grants             = ["INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD", "SELECT"]
       dynamic_table_grants     = ["SELECT"]
       external_table_grants    = ["SELECT", "REFERENCES"]
       view_grants              = ["SELECT", "REFERENCES"]
       materialized_view_grants = ["SELECT", "REFERENCES"]
       file_format_grants       = ["USAGE"]
       function_grants          = ["USAGE"]
-      stage_grants             = ["USAGE", "READ", "WRITE"]
+      stage_grants             = ["WRITE", "USAGE", "READ"]
       task_grants              = ["MONITOR", "OPERATE"]
       procedure_grants         = ["USAGE"]
     }
     transformer = {
       schema_grants            = ["CREATE TEMPORARY TABLE", "CREATE TAG", "CREATE PIPE", "CREATE PROCEDURE", "CREATE MATERIALIZED VIEW", "USAGE", "CREATE TABLE", "CREATE FILE FORMAT", "CREATE STAGE", "CREATE TASK", "CREATE FUNCTION", "CREATE EXTERNAL TABLE", "CREATE SEQUENCE", "CREATE VIEW", "CREATE STREAM"]
-      table_grants             = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+      table_grants             = ["INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD", "SELECT"]
       dynamic_table_grants     = ["ALL PRIVILEGES"]
       external_table_grants    = ["SELECT", "REFERENCES"]
       view_grants              = ["SELECT", "REFERENCES"]
       materialized_view_grants = ["SELECT", "REFERENCES"]
       file_format_grants       = ["USAGE"]
       function_grants          = ["USAGE"]
-      stage_grants             = ["USAGE", "READ", "WRITE"]
+      stage_grants             = ["WRITE", "USAGE", "READ"]
       task_grants              = ["MONITOR", "OPERATE"]
       procedure_grants         = ["USAGE"]
     }
