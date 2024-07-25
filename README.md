@@ -47,6 +47,23 @@ module "snowflake_schema" {
 - [Complete](examples/complete) - Advanced usage of the module
 - [Simple](examples/simple) - Basic usage of the module
 
+## Breaking changes in v2.x of the module
+Due to breaking changes in Snowflake provider and additional code optimizations, **breaking changes** were introduced in `v2.0.0` version of this module.
+
+List of code and variable (API) changes:
+- Switched to `snowflake_database_role` module to leverage new `database_roles` mechanism
+- Logic responsible for creating roles was removed
+- `default_roles` and `custom_roles` are now combined and controlled by single logic
+- `create_default_roles` variable was renamed to `create_default_database_roles`
+- stage module version was updated (`>= v2.0.0`) to use newly introduced changes by Snowflake provider
+- overhaul of `roles` and `stages` variables
+- variable `add_grants_to_existing_objects` was removed as it is no longer needed
+
+
+When upgrading from `v1.x`, expect most of the resources to be recreated - if recreation is impossible, then it is possible to import some existing resources.
+
+For more information, refer to [variables.tf](variables.tf), list of inputs below and Snowflake provider documentation
+
 <!-- BEGIN_TF_DOCS -->
 
 
