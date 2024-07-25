@@ -28,7 +28,7 @@ output "stages" {
   value       = module.snowflake_stage
 }
 
-output "roles" {
-  description = "Snowflake Roles"
+output "database_roles" {
+  description = "Snowflake Database Roles"
   value       = local.roles
 }
