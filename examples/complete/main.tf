@@ -86,6 +86,14 @@ module "this_schema" {
             all_privileges    = true
             with_grant_option = true
             on_all            = true
+            on_future         = false
+          }
+        ]
+        "FILE FORMAT" = [
+          {
+            all_privileges    = true
+            with_grant_option = false
+            on_all            = false
             on_future         = true
           }
         ]

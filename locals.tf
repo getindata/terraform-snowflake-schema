@@ -36,21 +36,24 @@ locals {
   default_roles_definition = var.create_default_database_roles ? {
     admin = {
       schema_grants = [{
-        privileges              = ["ALL PRIVILEGES"]
-        all_schemas_in_database = true
+        privileges                 = ["ALL PRIVILEGES"]
+        all_schemas_in_database    = true
+        future_schemas_in_database = true
       }]
       schema_objects_grants = {
         for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
         object_type => [{
           privileges = ["ALL PRIVILEGES"]
           on_all     = true
+          on_future  = true
         }]
       }
     }
     readwrite = {
       schema_grants = [{
-        privileges              = ["USAGE"]
-        all_schemas_in_database = true
+        privileges                 = ["USAGE"]
+        all_schemas_in_database    = true
+        future_schemas_in_database = true
       }]
       schema_objects_grants = {
         for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
@@ -66,14 +69,16 @@ locals {
             object_type == "TASK" ? join(",\n", ["MONITOR", "OPERATE"]) :
             join(",\n", ["USAGE"])
           ]
-          on_all = true
+          on_all    = true
+          on_future = true
         }]
       }
     }
     readonly = {
       schema_grants = [{
-        privileges              = ["USAGE"]
-        all_schemas_in_database = true
+        privileges                 = ["USAGE"]
+        all_schemas_in_database    = true
+        future_schemas_in_database = true
       }]
       schema_objects_grants = {
         for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK"] :
@@ -85,7 +90,8 @@ locals {
             object_type == "TASK" ? join(",\n", ["MONITOR"]) :
             tostring([])
           ]
-          on_all = true
+          on_all    = true
+          on_future = true
         }]
       }
     }
@@ -108,7 +114,8 @@ locals {
           "CREATE VIEW",
           "CREATE STREAM"
         ]
-        all_schemas_in_database = true
+        all_schemas_in_database    = true
+        future_schemas_in_database = true
       }]
       schema_objects_grants = {
         for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
@@ -125,7 +132,8 @@ locals {
             object_type == "PROCEDURE" ? join(",\n", ["USAGE"]) :
             tostring([])
           ]
-          on_all = true
+          on_all    = true
+          on_future = true
         }]
       }
     }
