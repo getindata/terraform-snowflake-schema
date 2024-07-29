@@ -14,10 +14,11 @@ resource "snowflake_schema" "this" {
   name    = local.name_from_descriptor
   comment = var.comment
 
-  database            = local.database
-  data_retention_days = var.data_retention_days
-  is_transient        = var.is_transient
-  is_managed          = var.is_managed
+  database     = local.database
+  is_transient = var.is_transient
+
+  data_retention_time_in_days = var.data_retention_time_in_days
+  with_managed_access         = var.with_managed_access
 }
 
 module "snowflake_stage" {
@@ -44,6 +45,9 @@ module "snowflake_stage" {
   snowflake_iam_user  = each.value.snowflake_iam_user
   storage_integration = each.value.storage_integration
   url                 = each.value.url
+  roles               = each.value.roles
+
+  create_default_database_roles = each.value.create_default_database_roles
 }
 
 module "snowflake_database_role" {

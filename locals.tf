@@ -34,16 +34,55 @@ locals {
   }
 
   default_roles_definition = var.create_default_database_roles ? {
-    admin = {
+    readonly = {
       schema_grants = [{
-        privileges                 = ["ALL PRIVILEGES"]
+        privileges                 = ["USAGE"]
         all_schemas_in_database    = true
         future_schemas_in_database = true
       }]
       schema_objects_grants = {
-        for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
-        object_type => [{
-          privileges = ["ALL PRIVILEGES"]
+        "TABLE" = [{
+          privileges = ["SELECT"]
+          on_all     = true
+          on_future  = true
+        }]
+        "DYNAMIC TABLE" = [{
+          privileges = ["SELECT"]
+          on_all     = true
+          on_future  = true
+        }]
+        "EXTERNAL TABLE" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "MATERIALIZED VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FILE FORMAT" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FUNCTION" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "STAGE" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "TASK" = [{
+          privileges = ["MONITOR"]
           on_all     = true
           on_future  = true
         }]
@@ -56,42 +95,114 @@ locals {
         future_schemas_in_database = true
       }]
       schema_objects_grants = {
-        for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
-        object_type => [{
-          privileges = [
-            object_type == "TABLE" ? join(",\n", ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]) :
-            object_type == "DYNAMIC TABLE" ? join(",\n", ["SELECT"]) :
-            object_type == "EXTERNAL TABLE" ? join(",\n", ["SELECT", "REFERENCES"]) :
-            object_type == "VIEW" || object_type == "MATERIALIZED VIEW" ? join(",\n", ["SELECT", "REFERENCES"]) :
-            object_type == "FILE FORMAT" ? join(",\n", ["USAGE"]) :
-            object_type == "FUNCTION" ? join(",\n", ["USAGE"]) :
-            object_type == "STAGE" ? join(",\n", ["USAGE", "READ", "WRITE"]) :
-            object_type == "TASK" ? join(",\n", ["MONITOR", "OPERATE"]) :
-            join(",\n", ["USAGE"])
-          ]
-          on_all    = true
-          on_future = true
+        "TABLE" = [{
+          privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+          on_all     = true
+          on_future  = true
+        }]
+        "DYNAMIC TABLE" = [{
+          privileges = ["SELECT"]
+          on_all     = true
+          on_future  = true
+        }]
+        "EXTERNAL TABLE" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "MATERIALIZED VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FILE FORMAT" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FUNCTION" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "STAGE" = [{
+          privileges = ["USAGE", "READ", "WRITE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "TASK" = [{
+          privileges = ["MONITOR", "OPERATE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "PROCEDURE" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
         }]
       }
     }
-    readonly = {
+    admin = {
       schema_grants = [{
-        privileges                 = ["USAGE"]
+        privileges                 = ["ALL PRIVILEGES"]
         all_schemas_in_database    = true
         future_schemas_in_database = true
       }]
       schema_objects_grants = {
-        for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK"] :
-        object_type => [{
-          privileges = [
-            object_type == "TABLE" || object_type == "DYNAMIC TABLE" ? join(",\n", ["SELECT"]) :
-            object_type == "EXTERNAL TABLE" || object_type == "VIEW" || object_type == "MATERIALIZED VIEW" ? join(",\n", ["SELECT", "REFERENCES"]) :
-            object_type == "FILE FORMAT" || object_type == "FUNCTION" || object_type == "STAGE" ? join(",\n", ["USAGE"]) :
-            object_type == "TASK" ? join(",\n", ["MONITOR"]) :
-            tostring([])
-          ]
-          on_all    = true
-          on_future = true
+        "TABLE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "DYNAMIC TABLE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "EXTERNAL TABLE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "VIEW" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "MATERIALIZED VIEW" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FILE FORMAT" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FUNCTION" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "STAGE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "TASK" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "PROCEDURE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
         }]
       }
     }
@@ -118,315 +229,59 @@ locals {
         future_schemas_in_database = true
       }]
       schema_objects_grants = {
-        for object_type in ["TABLE", "DYNAMIC TABLE", "EXTERNAL TABLE", "VIEW", "MATERIALIZED VIEW", "FILE FORMAT", "FUNCTION", "STAGE", "TASK", "PROCEDURE"] :
-        object_type => [{
-          privileges = [
-            object_type == "TABLE" ? join(",\n", ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]) :
-            object_type == "DYNAMIC TABLE" ? join(",\n", ["ALL PRIVILEGES"]) :
-            object_type == "EXTERNAL TABLE" ? join(",\n", ["SELECT", "REFERENCES"]) :
-            object_type == "VIEW" || object_type == "MATERIALIZED VIEW" ? join(",\n", ["SELECT", "REFERENCES"]) :
-            object_type == "FILE FORMAT" ? join(",\n", ["USAGE"]) :
-            object_type == "FUNCTION" ? join(",\n", ["USAGE"]) :
-            object_type == "STAGE" ? join(",\n", ["USAGE", "READ", "WRITE"]) :
-            object_type == "TASK" ? join(",\n", ["MONITOR", "OPERATE"]) :
-            object_type == "PROCEDURE" ? join(",\n", ["USAGE"]) :
-            tostring([])
-          ]
-          on_all    = true
-          on_future = true
+        "TABLE" = [{
+          privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
+          on_all     = true
+          on_future  = true
+        }]
+        "DYNAMIC TABLE" = [{
+          privileges = ["ALL PRIVILEGES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "EXTERNAL TABLE" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "MATERIALIZED VIEW" = [{
+          privileges = ["SELECT", "REFERENCES"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FILE FORMAT" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "FUNCTION" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "STAGE" = [{
+          privileges = ["USAGE", "READ", "WRITE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "TASK" = [{
+          privileges = ["MONITOR", "OPERATE"]
+          on_all     = true
+          on_future  = true
+        }]
+        "PROCEDURE" = [{
+          privileges = ["USAGE"]
+          on_all     = true
+          on_future  = true
         }]
       }
     }
   } : {}
-
-  # default_roles_definition = var.create_default_database_roles ? {
-  #   readonly = {
-  #     schema_grants = [
-  #       {
-  #         privileges              = ["USAGE"]
-  #         all_schemas_in_database = true
-  #       }
-  #     ]
-  #     schema_objects_grants = {
-  #       "TABLE" = [
-  #         {
-  #           privileges = ["SELECT"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "DYNAMIC TABLE" = [
-  #         {
-  #           privileges = ["SELECT"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "EXTERNAL TABLE" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "VIEW" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "MATERIALIZED VIEW" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FILE FORMAT" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FUNCTION" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "STAGE" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "TASK" = [
-  #         {
-  #           privileges = ["MONITOR"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #     }
-  #   }
-  #   readwrite = {
-  #     schema_grants = [
-  #       {
-  #         privileges              = ["USAGE"]
-  #         all_schemas_in_database = true
-  #       }
-  #     ]
-  #     schema_objects_grants = {
-  #       "TABLE" = [
-  #         {
-  #           privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "DYNAMIC TABLE" = [
-  #         {
-  #           privileges = ["SELECT"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "EXTERNAL TABLE" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "VIEW" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "MATERIALIZED VIEW" = [
-  #         {
-  #           privileges = ["SELECT", "REFERENCES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FILE FORMAT" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FUNCTION" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "STAGE" = [
-  #         {
-  #           privileges = ["USAGE", "READ", "WRITE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "TASK" = [
-  #         {
-  #           privileges = ["MONITOR", "OPERATE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "PROCEDURE" = [
-  #         {
-  #           privileges = ["USAGE"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #     }
-  #   }
-  #   admin = {
-  #     schema_grants = [
-  #       {
-  #         privileges              = ["ALL PRIVILEGES"]
-  #         all_schemas_in_database = true
-  #       }
-  #     ]
-  #     schema_objects_grants = {
-  #       "TABLE" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "DYNAMIC TABLE" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "EXTERNAL TABLE" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "VIEW" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "MATERIALIZED VIEW" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FILE FORMAT" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "FUNCTION" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "STAGE" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "TASK" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #       "PROCEDURE" = [
-  #         {
-  #           privileges = ["ALL PRIVILEGES"]
-  #           on_all     = true
-  #         }
-  #       ]
-  #     }
-  #   }
-  #   transformer = {
-  #     schema_grants = [{
-  #       privileges = [
-  #         "CREATE TEMPORARY TABLE",
-  #         "CREATE TAG",
-  #         "CREATE PIPE",
-  #         "CREATE PROCEDURE",
-  #         "CREATE MATERIALIZED VIEW",
-  #         "USAGE",
-  #         "CREATE TABLE",
-  #         "CREATE FILE FORMAT",
-  #         "CREATE STAGE",
-  #         "CREATE TASK",
-  #         "CREATE FUNCTION",
-  #         "CREATE EXTERNAL TABLE",
-  #         "CREATE SEQUENCE",
-  #         "CREATE VIEW",
-  #         "CREATE STREAM"
-  #       ]
-  #       all_schemas_in_database = true
-  #     }]
-  #     schema_objects_grants = {
-  #       "TABLE" = [
-  #         { 
-  #           privileges = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
-  #           on_all = true
-  #         }
-  #       ]
-  #       "DYNAMIC TABLE" = [
-  #         { 
-  #           privileges = ["ALL PRIVILEGES"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "EXTERNAL TABLE" = [
-  #         { 
-  #           privileges = ["SELECT", "REFERENCES"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "VIEW" = [
-  #         { 
-  #           privileges = ["SELECT", "REFERENCES"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "MATERIALIZED VIEW" = [
-  #         { 
-  #           privileges = ["SELECT", "REFERENCES"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "FILE FORMAT" = [
-  #         { privileges = ["USAGE"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "FUNCTION" = [
-  #         { privileges = ["USAGE"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "STAGE" = [
-  #         { 
-  #           privileges = ["USAGE", "READ", "WRITE"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "TASK" = [
-  #         { 
-  #           privileges = ["MONITOR", "OPERATE"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #       "PROCEDURE" = [
-  #         { 
-  #           privileges = ["USAGE"] 
-  #           on_all = true
-  #         }
-  #       ]
-  #     }
-  #   }
-  # } : {}
 
   provided_roles = {
     for role_name, role in var.roles : role_name => {

@@ -62,15 +62,9 @@ module "this_schema" {
   name     = "RAW"
   database = snowflake_database.this.name
 
-  is_managed          = false
-  is_transient        = false
-  data_retention_days = 1
-
-  stages = {
-    my_stage = {
-      comment = "Stage used to ingest data"
-    }
-  }
+  with_managed_access         = false
+  is_transient                = false
+  data_retention_time_in_days = 1
 
   create_default_database_roles = true
 
@@ -101,8 +95,8 @@ module "this_schema" {
     }
     database_role_1 = {
       granted_to_database_roles = [
+        "${snowflake_database.this.name}.${snowflake_database_role.db_role_1.name}",
         "${snowflake_database.this.name}.${snowflake_database_role.db_role_2.name}",
-        "${snowflake_database.this.name}.${snowflake_database_role.db_role_3.name}",
         "${snowflake_database.this.name}.${snowflake_database_role.db_role_3.name}"
       ]
       schema_grants = [
@@ -121,6 +115,19 @@ module "this_schema" {
           }
         ]
       }
+    }
+  }
+
+  stages = {
+    my_stage = {
+      comment = "Stage used to ingest data"
+
+      create_default_database_roles = false
+    }
+    my_second_stage = {
+      comment = "Stage used to transform data from other source"
+
+      create_default_database_roles = true
     }
   }
 }

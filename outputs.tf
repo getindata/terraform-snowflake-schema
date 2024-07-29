@@ -5,7 +5,7 @@ output "name" {
 
 output "data_retention_days" {
   description = "Data retention days for the schema"
-  value       = one(snowflake_schema.this[*].data_retention_days)
+  value       = one(snowflake_schema.this[*].data_retention_time_in_days)
 }
 
 output "is_transient" {
@@ -15,7 +15,7 @@ output "is_transient" {
 
 output "is_managed" {
   description = "Is schema managed"
-  value       = one(snowflake_schema.this[*].is_managed)
+  value       = one(snowflake_schema.this[*].with_managed_access)
 }
 
 output "database" {

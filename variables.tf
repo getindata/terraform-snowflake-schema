@@ -18,7 +18,7 @@ variable "comment" {
   default     = null
 }
 
-variable "data_retention_days" {
+variable "data_retention_time_in_days" {
   description = <<EOF
     "Specifies the number of days for which Time Travel actions (CLONE and UNDROP) can be performed on the schema, 
     as well as specifying the default Time Travel retention time for all tables created in the schema"
@@ -37,7 +37,7 @@ variable "is_transient" {
   default     = false
 }
 
-variable "is_managed" {
+variable "with_managed_access" {
   description = "Specifies a managed schema. Managed access schemas centralize privilege management with the schema owner"
   type        = bool
   default     = false
@@ -50,7 +50,7 @@ variable "create_default_database_roles" {
 }
 
 variable "roles" {
-  description = "Roles created in the scheme scope"
+  description = "Database roles created in the scheme scope"
   type = map(object({
     enabled                   = optional(bool, true)
     role_ownership_grant      = optional(string)
@@ -69,7 +69,7 @@ variable "roles" {
     schema_objects_grants = optional(map(list(object({
       all_privileges    = optional(bool)
       with_grant_option = optional(bool)
-      privileges        = optional(list(string))
+      privileges        = optional(list(string), null)
       object_name       = optional(string)
       on_all            = optional(bool, false)
       schema_name       = optional(string)
@@ -94,6 +94,18 @@ variable "stages" {
     snowflake_iam_user  = optional(string)
     storage_integration = optional(string)
     url                 = optional(string)
+    roles = optional(map(object({
+      with_grant_option         = optional(bool)
+      granted_to_roles          = optional(list(string))
+      granted_to_database_roles = optional(list(string))
+      granted_database_roles    = optional(list(string))
+      stage_grants              = optional(list(string))
+      all_privileges            = optional(bool)
+      on_all                    = optional(bool, false)
+      schema_name               = optional(string)
+      on_future                 = optional(bool, false)
+    })), ({}))
+    create_default_database_roles = optional(bool, false)
   }))
   default = {}
 }
