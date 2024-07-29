@@ -57,7 +57,11 @@ variable "roles" {
     granted_to_roles          = optional(list(string))
     granted_to_database_roles = optional(list(string))
     granted_database_roles    = optional(list(string))
-    database_grants           = optional(list(string))
+    database_grants           = optional(object({
+      all_privileges    = optional(bool)
+      with_grant_option = optional(bool, false)
+      privileges        = optional(list(string), null)
+    }))
     schema_grants = optional(list(object({
       all_privileges             = optional(bool)
       with_grant_option          = optional(bool, false)
