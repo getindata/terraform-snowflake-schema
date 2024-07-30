@@ -54,8 +54,7 @@ List of code and variable (API) changes:
 - Switched to `snowflake_database_role` module to leverage new `database_roles` mechanism
 - Logic responsible for creating roles was removed
 - `default_roles` and `custom_roles` are now combined and controlled by single logic
-- `create_default_roles` variable was renamed to `create_default_database_roles`
-- stage module version was updated (`>= v2.0.0`) to use newly introduced changes by Snowflake provider
+- stage module version was updated (`>= v2.0.1`) to use newly introduced changes by Snowflake provider
 - overhaul of `roles` and `stages` variables
 - variable `add_grants_to_existing_objects` was removed as it is no longer needed
 
