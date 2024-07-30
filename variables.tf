@@ -43,7 +43,7 @@ variable "with_managed_access" {
   default     = false
 }
 
-variable "create_default_database_roles" {
+variable "create_default_roles" {
   description = "Whether the default database roles should be created"
   type        = bool
   default     = false
@@ -109,7 +109,7 @@ variable "stages" {
       schema_name               = optional(string)
       on_future                 = optional(bool, false)
     })), ({}))
-    create_default_database_roles = optional(bool, false)
+    create_default_stage_roles = optional(bool, false)
   }))
   default = {}
 }

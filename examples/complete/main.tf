@@ -66,7 +66,7 @@ module "this_schema" {
   is_transient                = false
   data_retention_time_in_days = 1
 
-  create_default_database_roles = true
+  create_default_roles = true
 
   roles = {
     readwrite = { # Disables the default readwrite role
@@ -122,12 +122,12 @@ module "this_schema" {
     my_stage = {
       comment = "Stage used to ingest data"
 
-      create_default_database_roles = false
+      create_default_stage_roles = false
     }
     my_second_stage = {
       comment = "Stage used to transform data from other source"
 
-      create_default_database_roles = true
+      create_default_stage_roles = true
     }
   }
 }

@@ -25,7 +25,7 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = "2.0.0"
+  version = ">= 2.0.1"
   enabled = module.this.enabled && each.value.enabled
   context = module.this.context
 
@@ -47,7 +47,7 @@ module "snowflake_stage" {
   url                 = each.value.url
   roles               = each.value.roles
 
-  create_default_database_roles = each.value.create_default_database_roles
+  create_default_roles = each.value.create_default_stage_roles
 }
 
 module "snowflake_database_role" {

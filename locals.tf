@@ -33,7 +33,7 @@ locals {
     }
   }
 
-  default_roles_definition = var.create_default_database_roles ? {
+  default_roles_definition = var.create_default_roles ? {
     readonly = {
       schema_grants = [{
         privileges                 = ["USAGE"]
