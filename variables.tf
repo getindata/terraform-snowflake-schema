@@ -119,3 +119,118 @@ variable "descriptor_name" {
   type        = string
   default     = "snowflake-schema"
 }
+
+variable "catalog" {
+  description = "The database parameter that specifies the default catalog to use for Iceberg tables."
+  type        = string
+  default     = null
+}
+
+variable "default_ddl_collation" {
+  description = <<-EOT
+    Specifies a default collation specification for all schemas and tables added to the database.
+    It can be overridden on schema or table level.
+  EOT
+  type        = string
+  default     = null
+}
+
+variable "external_volume" {
+  description = "The database parameter that specifies the default external volume to use for Iceberg tables."
+  type        = string
+  default     = null
+}
+
+variable "log_level" {
+  description = <<-EOT
+    Specifies the severity level of messages that should be ingested and made available in the active event table.
+    Valid options are: [TRACE DEBUG INFO WARN ERROR FATAL OFF].
+    Messages at the specified level (and at more severe levels) are ingested.
+  EOT
+  type        = string
+  default     = null
+}
+
+variable "max_data_extension_time_in_days" {
+  description = <<-EOT
+    Object parameter that specifies the maximum number of days for which Snowflake can extend the data retention period 
+    for tables in the database to prevent streams on the tables from becoming stale.
+  EOT
+  type        = number
+  default     = null
+}
+
+variable "quoted_identifiers_ignore_case" {
+  description = "If true, the case of quoted identifiers is ignored."
+  type        = bool
+  default     = null
+}
+
+variable "replace_invalid_characters" {
+  description = <<-EOT
+    Specifies whether to replace invalid UTF-8 characters with the Unicode replacement character () in query results for an Iceberg table.
+    You can only set this parameter for tables that use an external Iceberg catalog.
+  EOT
+  type        = bool
+  default     = null
+}
+
+variable "storage_serialization_policy" {
+  description = <<-EOT
+    The storage serialization policy for Iceberg tables that use Snowflake as the catalog.
+    Valid options are: [COMPATIBLE OPTIMIZED].
+  EOT
+  type        = string
+  default     = "COMPATIBLE"
+}
+
+variable "trace_level" {
+  description = <<-EOT
+    Controls how trace events are ingested into the event table.
+    Valid options are: [ALWAYS ON_EVENT OFF]."
+  EOT
+  type        = string
+  default     = "ALWAYS"
+}
+
+variable "suspend_task_after_num_failures" {
+  description = "How many times a task must fail in a row before it is automatically suspended. 0 disables auto-suspending."
+  type        = number
+  default     = 10
+}
+
+variable "task_auto_retry_attempts" {
+  description = "Maximum automatic retries allowed for a user task."
+  type        = number
+  default     = 10
+}
+
+variable "user_task_managed_initial_warehouse_size" {
+  description = "The initial size of warehouse to use for managed warehouses in the absence of history."
+  type        = string
+  default     = "LARGE"
+}
+
+variable "user_task_timeout_ms" {
+  description = "User task execution timeout in milliseconds."
+  type        = number
+  default     = 3600000
+}
+
+variable "user_task_minimum_trigger_interval_in_seconds" {
+  description = "Minimum amount of time between Triggered Task executions in seconds."
+  type        = number
+  default     = 120
+}
+
+variable "enable_console_output" {
+  description = "Enables console output for user tasks."
+  type        = bool
+  default     = false
+}
+
+variable "pipe_execution_paused" {
+  description = "Pauses the execution of a pipe."
+  type        = bool
+  default     = false
+}
