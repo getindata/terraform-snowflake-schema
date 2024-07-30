@@ -121,7 +121,7 @@ variable "descriptor_name" {
 }
 
 variable "catalog" {
-  description = "The database parameter that specifies the default catalog to use for Iceberg tables."
+  description = "Parameter that specifies the default catalog to use for Iceberg tables."
   type        = string
   default     = null
 }
@@ -136,7 +136,7 @@ variable "default_ddl_collation" {
 }
 
 variable "external_volume" {
-  description = "The database parameter that specifies the default external volume to use for Iceberg tables."
+  description = "Parameter that specifies the default external volume to use for Iceberg tables."
   type        = string
   default     = null
 }
@@ -181,7 +181,7 @@ variable "storage_serialization_policy" {
     Valid options are: [COMPATIBLE OPTIMIZED].
   EOT
   type        = string
-  default     = "COMPATIBLE"
+  default     = null
 }
 
 variable "trace_level" {
@@ -190,47 +190,47 @@ variable "trace_level" {
     Valid options are: [ALWAYS ON_EVENT OFF]."
   EOT
   type        = string
-  default     = "ALWAYS"
+  default     = null
 }
 
 variable "suspend_task_after_num_failures" {
   description = "How many times a task must fail in a row before it is automatically suspended. 0 disables auto-suspending."
   type        = number
-  default     = 10
+  default     = null
 }
 
 variable "task_auto_retry_attempts" {
   description = "Maximum automatic retries allowed for a user task."
   type        = number
-  default     = 10
+  default     = null
 }
 
 variable "user_task_managed_initial_warehouse_size" {
   description = "The initial size of warehouse to use for managed warehouses in the absence of history."
   type        = string
-  default     = "LARGE"
+  default     = null
 }
 
 variable "user_task_timeout_ms" {
   description = "User task execution timeout in milliseconds."
   type        = number
-  default     = 3600000
+  default     = null
 }
 
 variable "user_task_minimum_trigger_interval_in_seconds" {
   description = "Minimum amount of time between Triggered Task executions in seconds."
   type        = number
-  default     = 120
+  default     = null
 }
 
 variable "enable_console_output" {
   description = "Enables console output for user tasks."
   type        = bool
-  default     = false
+  default     = null
 }
 
 variable "pipe_execution_paused" {
   description = "Pauses the execution of a pipe."
   type        = bool
-  default     = false
+  default     = null
 }
