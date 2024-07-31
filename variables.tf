@@ -109,7 +109,7 @@ variable "stages" {
       schema_name               = optional(string)
       on_future                 = optional(bool, false)
     })), ({}))
-    create_default_stage_roles = optional(bool, false)
+    create_default_roles = optional(bool, false)
   }))
   default = {}
 }

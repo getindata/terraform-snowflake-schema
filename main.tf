@@ -41,7 +41,7 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = ">= 2.0.1"
+  version = "2.1.0"
   enabled = module.this.enabled && each.value.enabled
   context = module.this.context
 
@@ -63,15 +63,35 @@ module "snowflake_stage" {
   url                 = each.value.url
   roles               = each.value.roles
 
-  create_default_roles = each.value.create_default_stage_roles
+  create_default_roles = each.value.create_default_roles
 }
 
-module "snowflake_database_role" {
-  for_each = local.roles
+module "snowflake_default_role" {
+  for_each = local.default_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "1.1.0"
+  version = "1.1.1"
   context = module.this.context
+  enabled = local.create_default_roles && lookup(each.value, "enabled", true)
+
+  database_name = one(snowflake_schema.this[*].database)
+  name          = each.key
+  attributes    = [local.database, local.schema]
+
+  granted_to_roles          = lookup(each.value, "granted_to_roles", [])
+  granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
+  granted_database_roles    = lookup(each.value, "granted_database_roles", [])
+  schema_grants             = lookup(each.value, "schema_grants", [])
+  schema_objects_grants     = lookup(each.value, "schema_objects_grants", {})
+}
+
+module "snowflake_custom_role" {
+  for_each = local.custom_roles
+
+  source  = "getindata/database-role/snowflake"
+  version = "1.1.1"
+  context = module.this.context
+  enabled = module.this.enabled && lookup(each.value, "enabled", true)
 
   database_name = one(snowflake_schema.this[*].database)
   name          = each.key

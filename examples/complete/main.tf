@@ -1,4 +1,4 @@
-resource "snowflake_role" "role_1" {
+resource "snowflake_account_role" "role_1" {
   name = "ROLE_1"
 }
 
@@ -73,7 +73,7 @@ module "this_schema" {
       enabled = false
     }
     transformer = { # Modifies the default transformer role
-      granted_to_roles = [snowflake_role.role_1.name]
+      granted_to_roles = [snowflake_account_role.role_1.name]
       schema_objects_grants = {
         "EXTERNAL TABLE" = [
           {
@@ -122,12 +122,12 @@ module "this_schema" {
     my_stage = {
       comment = "Stage used to ingest data"
 
-      create_default_stage_roles = false
+      create_default_roles = false
     }
     my_second_stage = {
       comment = "Stage used to transform data from other source"
 
-      create_default_stage_roles = true
+      create_default_roles = true
     }
   }
 }

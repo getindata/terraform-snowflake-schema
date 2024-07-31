@@ -5,7 +5,9 @@ locals {
     lookup(module.schema_label.descriptors, var.descriptor_name, module.schema_label.id), "/${module.schema_label.delimiter}${module.schema_label.delimiter}+/", module.schema_label.delimiter
   ), module.schema_label.delimiter) : null
 
-  schema   = coalesce(one(snowflake_schema.this[*].name), var.name)
+  create_default_roles = module.this.enabled && var.create_default_roles
+
+  schema   = module.this.enabled ? coalesce(one(snowflake_schema.this[*].name), var.name) : null
   database = var.database
 
   # This needs to be the same as an object in roles variable
@@ -33,7 +35,7 @@ locals {
     }
   }
 
-  default_roles_definition = var.create_default_roles ? {
+  default_roles_definition = {
     readonly = {
       schema_grants = [{
         privileges                 = ["USAGE"]
@@ -281,7 +283,7 @@ locals {
         }]
       }
     }
-  } : {}
+  }
 
   provided_roles = {
     for role_name, role in var.roles : role_name => {
@@ -297,9 +299,22 @@ locals {
     )
   }
 
-  roles = {
+  default_roles = {
     for role_name, role in local.roles_definition : role_name => role
-    if role_name != null && role.enabled
+    if contains(keys(local.default_roles_definition), role_name)
+  }
+
+  custom_roles = {
+    for role_name, role in local.roles_definition : role_name => role
+    if !contains(keys(local.default_roles_definition), role_name)
+  }
+
+  roles = {
+    for role_name, role in merge(
+      module.snowflake_default_role,
+      module.snowflake_custom_role
+    ) : role_name => role
+    if role.name != null
   }
 }
 
