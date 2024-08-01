@@ -91,6 +91,13 @@ module "this_schema" {
             on_future         = true
           }
         ]
+        "HYBRID TABLE" = [
+          {
+            all_privileges = true
+            on_all         = true
+            on_future      = true
+          }
+        ]
       }
     }
     database_role_1 = {
