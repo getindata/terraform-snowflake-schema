@@ -53,7 +53,7 @@ variable "roles" {
   description = "Database roles created in the scheme scope"
   type = map(object({
     enabled                   = optional(bool, true)
-    descriptor_name           = optional(string, "snowflake-role")
+    descriptor_name           = optional(string, "snowflake-database-role")
     role_ownership_grant      = optional(string)
     granted_to_roles          = optional(list(string))
     granted_to_database_roles = optional(list(string))
@@ -100,6 +100,7 @@ variable "stages" {
     storage_integration = optional(string)
     url                 = optional(string)
     roles = optional(map(object({
+      descriptor_name           = optional(string, "snowflake-database-role")
       with_grant_option         = optional(bool)
       granted_to_roles          = optional(list(string))
       granted_to_database_roles = optional(list(string))

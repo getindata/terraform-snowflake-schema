@@ -77,7 +77,7 @@ module "snowflake_default_role" {
   database_name   = one(snowflake_schema.this[*].database)
   name            = each.key
   attributes      = [local.schema]
-  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-role")
+  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-database-role")
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
@@ -97,7 +97,7 @@ module "snowflake_custom_role" {
   database_name   = one(snowflake_schema.this[*].database)
   name            = each.key
   attributes      = [local.schema]
-  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-role")
+  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-database-role")
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
