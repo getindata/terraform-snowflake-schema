@@ -53,6 +53,7 @@ variable "roles" {
   description = "Database roles created in the scheme scope"
   type = map(object({
     enabled                   = optional(bool, true)
+    descriptor_name           = optional(string, "snowflake-role")
     role_ownership_grant      = optional(string)
     granted_to_roles          = optional(list(string))
     granted_to_database_roles = optional(list(string))
