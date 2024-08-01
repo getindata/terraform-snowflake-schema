@@ -133,7 +133,27 @@ For more information, refer to [variables.tf](variables.tf), list of inputs belo
 | <a name="output_database"></a> [database](#output\_database) | Database where the schema is deployed to |
 | <a name="output_database_roles"></a> [database\_roles](#output\_database\_roles) | Snowflake Database Roles |
 | <a name="output_name"></a> [name](#output\_name) | Name of the schema |
-| <a name="output_schema"></a> [schema](#output\_schema) | Details of the schema |
+| <a name="output_schema_catalog"></a> [schema\_catalog](#output\_schema\_catalog) | Catalog for the schema |
+| <a name="output_schema_comment"></a> [schema\_comment](#output\_schema\_comment) | Comment of the schema |
+| <a name="output_schema_data_retention_time_in_days"></a> [schema\_data\_retention\_time\_in\_days](#output\_schema\_data\_retention\_time\_in\_days) | Data retention time in days for the schema |
+| <a name="output_schema_database"></a> [schema\_database](#output\_schema\_database) | Database where the schema is deployed to |
+| <a name="output_schema_default_ddl_collation"></a> [schema\_default\_ddl\_collation](#output\_schema\_default\_ddl\_collation) | Default DDL collation for the schema |
+| <a name="output_schema_enable_console_output"></a> [schema\_enable\_console\_output](#output\_schema\_enable\_console\_output) | Whether to enable console output for the schema |
+| <a name="output_schema_external_volume"></a> [schema\_external\_volume](#output\_schema\_external\_volume) | External volume for the schema |
+| <a name="output_schema_is_transient"></a> [schema\_is\_transient](#output\_schema\_is\_transient) | Is the schema transient |
+| <a name="output_schema_log_level"></a> [schema\_log\_level](#output\_schema\_log\_level) | Log level for the schema |
+| <a name="output_schema_max_data_extension_time_in_days"></a> [schema\_max\_data\_extension\_time\_in\_days](#output\_schema\_max\_data\_extension\_time\_in\_days) | Maximum data extension time in days for the schema |
+| <a name="output_schema_pipe_execution_paused"></a> [schema\_pipe\_execution\_paused](#output\_schema\_pipe\_execution\_paused) | Whether to pause pipe execution for the schema |
+| <a name="output_schema_quoted_identifiers_ignore_case"></a> [schema\_quoted\_identifiers\_ignore\_case](#output\_schema\_quoted\_identifiers\_ignore\_case) | Whether to ignore case for quoted identifiers for the schema |
+| <a name="output_schema_replace_invalid_characters"></a> [schema\_replace\_invalid\_characters](#output\_schema\_replace\_invalid\_characters) | Whether to replace invalid characters for the schema |
+| <a name="output_schema_storage_serialization_policy"></a> [schema\_storage\_serialization\_policy](#output\_schema\_storage\_serialization\_policy) | Storage serialization policy for the schema |
+| <a name="output_schema_suspend_task_after_num_failures"></a> [schema\_suspend\_task\_after\_num\_failures](#output\_schema\_suspend\_task\_after\_num\_failures) | Number of task failures after which to suspend the task for the schema |
+| <a name="output_schema_task_auto_retry_attempts"></a> [schema\_task\_auto\_retry\_attempts](#output\_schema\_task\_auto\_retry\_attempts) | Number of task auto retry attempts for the schema |
+| <a name="output_schema_trace_level"></a> [schema\_trace\_level](#output\_schema\_trace\_level) | Trace level for the schema |
+| <a name="output_schema_user_task_managed_initial_warehouse_size"></a> [schema\_user\_task\_managed\_initial\_warehouse\_size](#output\_schema\_user\_task\_managed\_initial\_warehouse\_size) | User task managed initial warehouse size for the schema |
+| <a name="output_schema_user_task_minimum_trigger_interval_in_seconds"></a> [schema\_user\_task\_minimum\_trigger\_interval\_in\_seconds](#output\_schema\_user\_task\_minimum\_trigger\_interval\_in\_seconds) | User task minimum trigger interval in seconds for the schema |
+| <a name="output_schema_user_task_timeout_ms"></a> [schema\_user\_task\_timeout\_ms](#output\_schema\_user\_task\_timeout\_ms) | User task timeout in milliseconds for the schema |
+| <a name="output_schema_with_managed_access"></a> [schema\_with\_managed\_access](#output\_schema\_with\_managed\_access) | Whether the schema has managed access |
 | <a name="output_stages"></a> [stages](#output\_stages) | Schema stages |
 
 ## Providers

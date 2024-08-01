@@ -9,7 +9,7 @@ module "schema_label" {
 }
 
 resource "snowflake_schema" "this" {
-  count = module.this.enabled && var.skip_schema_creation == false ? 1 : 0
+  count = module.this.enabled && !var.skip_schema_creation ? 1 : 0
 
   name    = local.name_from_descriptor
   comment = var.comment
@@ -76,7 +76,7 @@ module "snowflake_default_role" {
 
   database_name = one(snowflake_schema.this[*].database)
   name          = each.key
-  attributes    = [local.database, local.schema]
+  attributes    = [local.schema]
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
@@ -95,7 +95,7 @@ module "snowflake_custom_role" {
 
   database_name = one(snowflake_schema.this[*].database)
   name          = each.key
-  attributes    = [local.database, local.schema]
+  attributes    = [local.schema]
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
