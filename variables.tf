@@ -1,7 +1,7 @@
 variable "skip_schema_creation" {
   description = <<EOF
-    "Should schema creation be skipped but allow all other resources to be created. 
-    Useful if schema already exsists but you want to add e.g. access roles"
+    Should schema creation be skipped but allow all other resources to be created.
+    Useful if schema already exsists but you want to add e.g. access roles."
     EOF
   type        = bool
   default     = false
@@ -20,8 +20,8 @@ variable "comment" {
 
 variable "data_retention_time_in_days" {
   description = <<EOF
-    "Specifies the number of days for which Time Travel actions (CLONE and UNDROP) can be performed on the schema, 
-    as well as specifying the default Time Travel retention time for all tables created in the schema"
+    Specifies the number of days for which Time Travel actions (CLONE and UNDROP) can be performed on the schema,
+    as well as specifying the default Time Travel retention time for all tables created in the schema
     EOF
   type        = number
   default     = 1
@@ -29,9 +29,9 @@ variable "data_retention_time_in_days" {
 
 variable "is_transient" {
   description = <<EOF
-    "Specifies a schema as transient. 
+    Specifies a schema as transient.
     Transient schemas do not have a Fail-safe period so they do not incur additional storage costs once they leave Time Travel; 
-    however, this means they are also not protected by Fail-safe in the event of a data loss"
+    however, this means they are also not protected by Fail-safe in the event of a data loss.
     EOF
   type        = bool
   default     = false
