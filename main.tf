@@ -41,7 +41,7 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = "2.1.0"
+  version = "2.1.1"
   enabled = module.this.enabled && each.value.enabled
   context = module.this.context
 

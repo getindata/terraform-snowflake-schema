@@ -91,7 +91,7 @@ module "this_schema" {
             on_future         = true
           }
         ]
-        "HYBRID TABLE" = [
+        "ICEBERG TABLE" = [
           {
             all_privileges = true
             on_all         = true
@@ -116,7 +116,6 @@ module "this_schema" {
         "ALERT" = [
           {
             all_privileges    = true
-            schema_name       = "RAW"
             with_grant_option = true
             on_all            = true
           }
