@@ -131,9 +131,11 @@ module "this_schema" {
       create_default_roles = false
     }
     my_second_stage = {
-      comment = "Stage used to transform data from other source"
-
+      comment              = "Stage used to transform data from other source"
       create_default_roles = true
+    }
+    my_third_stage = {
+      comment = "Stage used to transform data from other source"
     }
   }
 }
