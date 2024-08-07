@@ -99,7 +99,7 @@ variable "stages" {
       stage_grants              = optional(list(string))
       all_privileges            = optional(bool)
     })), ({}))
-    create_default_roles = optional(bool, false)
+    create_default_roles = optional(bool)
   }))
   default = {}
 }

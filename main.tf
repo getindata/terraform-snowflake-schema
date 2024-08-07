@@ -63,7 +63,7 @@ module "snowflake_stage" {
   url                 = each.value.url
   roles               = each.value.roles
 
-  create_default_roles = each.value.create_default_roles
+  create_default_roles = coalesce(each.value.create_default_roles, var.create_default_roles)
 }
 
 module "snowflake_default_role" {
