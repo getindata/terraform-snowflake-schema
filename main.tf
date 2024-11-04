@@ -70,7 +70,7 @@ module "snowflake_default_role" {
   for_each = local.default_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "1.1.1"
+  version = "2.0.0"
   context = module.this.context
   enabled = local.create_default_roles && lookup(each.value, "enabled", true)
 
@@ -90,7 +90,7 @@ module "snowflake_custom_role" {
   for_each = local.custom_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "1.1.1"
+  version = "2.0.0"
   context = module.this.context
   enabled = module.this.enabled && lookup(each.value, "enabled", true)
 
