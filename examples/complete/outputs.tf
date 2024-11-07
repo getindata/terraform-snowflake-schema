@@ -1,4 +1,4 @@
-output "schema" {
+output "new_schema" {
   description = "Schema module outputs"
-  value       = module.this_schema
+  value       = module.new_schema
 }

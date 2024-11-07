@@ -1,20 +1,23 @@
-module "schema_label" {
-  source  = "cloudposse/label/null"
-  version = "0.25.0"
-  context = module.this.context
+data "context_label" "this" {
+  delimiter  = local.context_template == null ? var.name_scheme.delimiter : null
+  properties = local.context_template == null ? var.name_scheme.properties : null
+  template   = local.context_template
 
-  delimiter           = coalesce(module.this.context.delimiter, "_")
-  regex_replace_chars = coalesce(module.this.context.regex_replace_chars, "/[^_a-zA-Z0-9]/")
-  label_value_case    = coalesce(module.this.context.label_value_case, "upper")
+  replace_chars_regex = var.name_scheme.replace_chars_regex
+
+  values = merge(
+    var.name_scheme.extra_values,
+    { name = var.name }
+  )
 }
 
 resource "snowflake_schema" "this" {
-  count = module.this.enabled && !var.skip_schema_creation ? 1 : 0
+  count = var.skip_schema_creation ? 0 : 1
 
-  name    = local.name_from_descriptor
+  name    = data.context_label.this.rendered
   comment = var.comment
 
-  database     = local.database
+  database     = var.database
   is_transient = var.is_transient
 
   data_retention_time_in_days                   = var.data_retention_time_in_days
@@ -41,15 +44,21 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = "2.1.1"
-  enabled = module.this.enabled && each.value.enabled
-  context = module.this.context
+  version = "3.0.0"
 
-  name            = each.key
-  descriptor_name = each.value.descriptor_name
+  context_templates = var.context_templates
+
+  name = each.key
+  name_scheme = merge({
+    extra_values = {
+      database = var.database
+      schema   = var.name
+    } },
+    lookup(each.value, "name_scheme", {})
+  )
 
   schema   = local.schema
-  database = local.database
+  database = var.database
 
   aws_external_id     = each.value.aws_external_id
   comment             = each.value.comment
@@ -70,14 +79,16 @@ module "snowflake_default_role" {
   for_each = local.default_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "1.1.1"
-  context = module.this.context
-  enabled = local.create_default_roles && lookup(each.value, "enabled", true)
+  version = "2.0.1"
 
-  database_name   = one(snowflake_schema.this[*].database)
-  name            = each.key
-  attributes      = [local.schema]
-  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-database-role")
+  database_name     = var.database
+  context_templates = var.context_templates
+
+  name = each.key
+  name_scheme = merge(
+    local.default_role_naming_scheme,
+    lookup(each.value, "name_scheme", {})
+  )
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
@@ -90,14 +101,16 @@ module "snowflake_custom_role" {
   for_each = local.custom_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "1.1.1"
-  context = module.this.context
-  enabled = module.this.enabled && lookup(each.value, "enabled", true)
+  version = "2.0.1"
 
-  database_name   = one(snowflake_schema.this[*].database)
-  name            = each.key
-  attributes      = [local.schema]
-  descriptor_name = lookup(each.value, "descriptor_name", "snowflake-database-role")
+  database_name     = var.database
+  context_templates = var.context_templates
+
+  name = each.key
+  name_scheme = merge(
+    local.default_role_naming_scheme,
+    lookup(each.value, "name_scheme", {})
+  )
 
   granted_to_roles          = lookup(each.value, "granted_to_roles", [])
   granted_to_database_roles = lookup(each.value, "granted_to_database_roles", [])
