@@ -174,7 +174,7 @@ List od code and variable (API) changes:
 | Name | Version |
 |------|---------|
 | <a name="provider_context"></a> [context](#provider\_context) | >=0.4.0 |
-| <a name="provider_snowflake"></a> [snowflake](#provider\_snowflake) | ~> 0.94 |
+| <a name="provider_snowflake"></a> [snowflake](#provider\_snowflake) | ~> 0.95 |
 
 ## Requirements
 
@@ -182,7 +182,7 @@ List od code and variable (API) changes:
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.3 |
 | <a name="requirement_context"></a> [context](#requirement\_context) | >=0.4.0 |
-| <a name="requirement_snowflake"></a> [snowflake](#requirement\_snowflake) | ~> 0.94 |
+| <a name="requirement_snowflake"></a> [snowflake](#requirement\_snowflake) | ~> 0.95 |
 
 ## Resources
 
