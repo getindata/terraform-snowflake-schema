@@ -1,14 +1,16 @@
 locals {
-  # Get a name from the descriptor. If not available, use default naming convention.
-  # Trim and replace function are used to avoid bare delimiters on both ends of the name and situation of adjacent delimiters.
-  name_from_descriptor = module.schema_label.enabled ? trim(replace(
-    lookup(module.schema_label.descriptors, var.descriptor_name, module.schema_label.id), "/${module.schema_label.delimiter}${module.schema_label.delimiter}+/", module.schema_label.delimiter
-  ), module.schema_label.delimiter) : null
+  context_template = lookup(var.context_templates, var.name_scheme.context_template_name, null)
 
-  create_default_roles = module.this.enabled && var.create_default_roles
+  default_role_naming_scheme = {
+    properties            = ["schema", "name"]
+    context_template_name = "snowflake-schema-database-role"
+    extra_values = {
+      database = var.database
+      schema   = var.name
+    }
+  }
 
-  schema   = module.this.enabled ? coalesce(one(snowflake_schema.this[*].name), var.name) : null
-  database = var.database
+  schema = coalesce(one(snowflake_schema.this[*].name), var.name)
 
   # This needs to be the same as an object in roles variable
   role_template = {
@@ -38,59 +40,59 @@ locals {
     readonly = {
       schema_grants = [{
         privileges  = ["USAGE"]
-        schema_name = local.name_from_descriptor
+        schema_name = data.context_label.this.rendered
       }]
       schema_objects_grants = {
         "TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT"]
           on_all      = true
           on_future   = true
         }]
         "DYNAMIC TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT"]
           on_all      = true
           on_future   = true
         }]
         "EXTERNAL TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "MATERIALIZED VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "FILE FORMAT" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "FUNCTION" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "STAGE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "TASK" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["MONITOR"]
           on_all      = true
           on_future   = true
@@ -100,65 +102,65 @@ locals {
     readwrite = {
       schema_grants = [{
         privileges  = ["USAGE"]
-        schema_name = local.name_from_descriptor
+        schema_name = data.context_label.this.rendered
       }]
       schema_objects_grants = {
         "TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
           on_all      = true
           on_future   = true
         }]
         "DYNAMIC TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT"]
           on_all      = true
           on_future   = true
         }]
         "EXTERNAL TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "MATERIALIZED VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "FILE FORMAT" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "FUNCTION" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "STAGE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE", "READ", "WRITE"]
           on_all      = true
           on_future   = true
         }]
         "TASK" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["MONITOR", "OPERATE"]
           on_all      = true
           on_future   = true
         }]
         "PROCEDURE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
@@ -168,74 +170,74 @@ locals {
     admin = {
       schema_grants = [{
         privileges  = ["ALL PRIVILEGES"]
-        schema_name = local.name_from_descriptor
+        schema_name = data.context_label.this.rendered
       }]
       schema_objects_grants = {
         "TABLE" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "DYNAMIC TABLE" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "EXTERNAL TABLE" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "VIEW" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "MATERIALIZED VIEW" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "FILE FORMAT" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "FUNCTION" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "STAGE" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "TASK" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
         "PROCEDURE" = [{
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
         }]
       }
     }
     transformer = {
       schema_grants = [{
-        schema_name = local.name_from_descriptor
+        schema_name = data.context_label.this.rendered
         privileges = [
           "CREATE TEMPORARY TABLE",
           "CREATE TAG",
@@ -256,61 +258,61 @@ locals {
       }]
       schema_objects_grants = {
         "TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "REBUILD"]
           on_all      = true
           on_future   = true
         }]
         "DYNAMIC TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["ALL PRIVILEGES"]
           on_all      = true
           on_future   = true
         }]
         "EXTERNAL TABLE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "MATERIALIZED VIEW" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["SELECT", "REFERENCES"]
           on_all      = true
           on_future   = true
         }]
         "FILE FORMAT" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "FUNCTION" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
         }]
         "STAGE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE", "READ", "WRITE"]
           on_all      = true
           on_future   = true
         }]
         "TASK" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["MONITOR", "OPERATE"]
           on_all      = true
           on_future   = true
         }]
         "PROCEDURE" = [{
-          schema_name = local.name_from_descriptor
+          schema_name = data.context_label.this.rendered
           privileges  = ["USAGE"]
           on_all      = true
           on_future   = true
@@ -328,7 +330,7 @@ locals {
       },
       {
         for k, v in role : k => [
-          for object in v : merge(object, { schema_name = local.name_from_descriptor })
+          for object in v : merge(object, { schema_name = data.context_label.this.rendered })
         ]
         if v != null && k == "schema_grants"
       },
@@ -338,7 +340,7 @@ locals {
             for grant in config : merge(
               grant,
               {
-                schema_name = local.name_from_descriptor
+                schema_name = data.context_label.this.rendered
               }
             )
           ]
@@ -357,7 +359,7 @@ locals {
 
   default_roles = {
     for role_name, role in local.roles_definition : role_name => role
-    if contains(keys(local.default_roles_definition), role_name)
+    if contains(keys(local.default_roles_definition), role_name) && var.create_default_roles
   }
 
   custom_roles = {
@@ -370,7 +372,7 @@ locals {
       module.snowflake_default_role,
       module.snowflake_custom_role
     ) : role_name => role
-    if role.name != null
+    if role_name != null
   }
 }
 

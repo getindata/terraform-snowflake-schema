@@ -1,3 +1,8 @@
+variable "name" {
+  description = "Name of the resource"
+  type        = string
+}
+
 variable "skip_schema_creation" {
   description = <<EOF
     Should schema creation be skipped but allow all other resources to be created.
@@ -52,8 +57,13 @@ variable "create_default_roles" {
 variable "roles" {
   description = "Database roles created in the scheme scope"
   type = map(object({
-    enabled                   = optional(bool, true)
-    descriptor_name           = optional(string, "snowflake-database-role")
+    name_scheme = optional(object({
+      properties            = optional(list(string))
+      delimiter             = optional(string)
+      context_template_name = optional(string)
+      replace_chars_regex   = optional(string)
+      extra_labels          = optional(map(string))
+    }))
     role_ownership_grant      = optional(string)
     granted_to_roles          = optional(list(string))
     granted_to_database_roles = optional(list(string))
@@ -78,36 +88,41 @@ variable "roles" {
 variable "stages" {
   description = "Stages to be created in the schema"
   type = map(object({
-    enabled             = optional(bool, true)
-    descriptor_name     = optional(string, "snowflake-stage")
-    aws_external_id     = optional(string)
-    comment             = optional(string)
-    copy_options        = optional(string)
-    credentials         = optional(string)
-    directory           = optional(string)
-    encryption          = optional(string)
-    file_format         = optional(string)
-    snowflake_iam_user  = optional(string)
-    storage_integration = optional(string)
-    url                 = optional(string)
+    name_scheme = optional(object({
+      properties            = optional(list(string))
+      delimiter             = optional(string)
+      context_template_name = optional(string)
+      replace_chars_regex   = optional(string)
+      extra_labels          = optional(map(string))
+    }))
+    aws_external_id      = optional(string)
+    comment              = optional(string)
+    copy_options         = optional(string)
+    credentials          = optional(string)
+    directory            = optional(string)
+    encryption           = optional(string)
+    file_format          = optional(string)
+    snowflake_iam_user   = optional(string)
+    storage_integration  = optional(string)
+    url                  = optional(string)
+    create_default_roles = optional(bool)
     roles = optional(map(object({
-      descriptor_name           = optional(string, "snowflake-database-role")
+      name_scheme = optional(object({
+        properties            = optional(list(string))
+        delimiter             = optional(string)
+        context_template_name = optional(string)
+        replace_chars_regex   = optional(string)
+        extra_labels          = optional(map(string))
+      }))
       with_grant_option         = optional(bool)
       granted_to_roles          = optional(list(string))
       granted_to_database_roles = optional(list(string))
       granted_database_roles    = optional(list(string))
       stage_grants              = optional(list(string))
       all_privileges            = optional(bool)
-    })), ({}))
-    create_default_roles = optional(bool)
+    })), {})
   }))
   default = {}
-}
-
-variable "descriptor_name" {
-  description = "Name of the descriptor used to form a resource name"
-  type        = string
-  default     = "snowflake-schema"
 }
 
 variable "catalog" {
@@ -223,4 +238,29 @@ variable "pipe_execution_paused" {
   description = "Pauses the execution of a pipe."
   type        = bool
   default     = null
+}
+
+variable "name_scheme" {
+  description = <<EOT
+  Naming scheme configuration for the resource. This configuration is used to generate names using context provider:
+    - `properties` - list of properties to use when creating the name - is superseded by `var.context_templates`
+    - `delimiter` - delimited used to create the name from `properties` - is superseded by `var.context_templates`
+    - `context_template_name` - name of the context template used to create the name
+    - `replace_chars_regex` - regex to use for replacing characters in property-values created by the provider - any characters that match the regex will be removed from the name
+    - `extra_values` - map of extra label-value pairs, used to create a name
+  EOT
+  type = object({
+    properties            = optional(list(string), ["name"])
+    delimiter             = optional(string, "_")
+    context_template_name = optional(string, "snowflake-schema")
+    replace_chars_regex   = optional(string, "[^a-zA-Z0-9_]")
+    extra_values          = optional(map(string))
+  })
+  default = {}
+}
+
+variable "context_templates" {
+  description = "Map of context templates used for naming conventions - this variable supersedes `naming_scheme.properties` and `naming_scheme.delimiter` configuration"
+  type        = map(string)
+  default     = {}
 }

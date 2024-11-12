@@ -21,9 +21,14 @@ resource "snowflake_database" "this" {
   name = "ANALYTICS_DB"
 }
 
+resource "snowflake_schema" "this" {
+  name     = "existing"
+  database = snowflake_database.this.name
+}
+
 resource "snowflake_table" "table_1" {
   database = snowflake_database.this.name
-  schema   = module.this_schema.name
+  schema   = module.new_schema.name
   name     = "TEST_TABLE_1"
 
   column {
@@ -40,7 +45,7 @@ resource "snowflake_table" "table_1" {
 
 resource "snowflake_table" "table_2" {
   database = snowflake_database.this.name
-  schema   = module.this_schema.name
+  schema   = module.new_schema.name
   name     = "TEST_TABLE_2"
 
   column {
@@ -55,11 +60,23 @@ resource "snowflake_table" "table_2" {
   }
 }
 
-module "this_schema" {
-  source  = "../../"
-  context = module.this.context
+module "existing_schema" {
+  source            = "../../"
+  context_templates = var.context_templates
 
-  name     = "RAW"
+  name     = snowflake_schema.this.name
+  database = snowflake_database.this.name
+
+  skip_schema_creation = true
+  create_default_roles = true
+
+}
+
+module "new_schema" {
+  source            = "../../"
+  context_templates = var.context_templates
+
+  name     = "raw"
   database = snowflake_database.this.name
 
   with_managed_access         = false
@@ -69,9 +86,6 @@ module "this_schema" {
   create_default_roles = true
 
   roles = {
-    readwrite = { # Disables the default readwrite role
-      enabled = false
-    }
     transformer = { # Modifies the default transformer role
       granted_to_roles = [snowflake_account_role.role_1.name]
       schema_objects_grants = {
