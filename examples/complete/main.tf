@@ -28,7 +28,7 @@ resource "snowflake_schema" "this" {
 
 resource "snowflake_table" "table_1" {
   database = snowflake_database.this.name
-  schema   = module.new_schema.name
+  schema   = module.raw_schema.name
   name     = "TEST_TABLE_1"
 
   column {
@@ -45,7 +45,7 @@ resource "snowflake_table" "table_1" {
 
 resource "snowflake_table" "table_2" {
   database = snowflake_database.this.name
-  schema   = module.new_schema.name
+  schema   = module.raw_schema.name
   name     = "TEST_TABLE_2"
 
   column {
@@ -72,7 +72,7 @@ module "existing_schema" {
 
 }
 
-module "new_schema" {
+module "raw_schema" {
   source            = "../../"
   context_templates = var.context_templates
 
@@ -152,4 +152,15 @@ module "new_schema" {
       comment = "Stage used to transform data from other source"
     }
   }
+}
+
+module "marts_schema" {
+  source            = "../../"
+  context_templates = var.context_templates
+
+  name = "marts"
+  name_scheme = {
+    uppercase = false
+  }
+  database = snowflake_database.this.name
 }
