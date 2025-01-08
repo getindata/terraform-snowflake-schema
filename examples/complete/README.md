@@ -42,13 +42,15 @@ terraform destroy -var-file=fixtures.tfvars
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_existing_schema"></a> [existing\_schema](#module\_existing\_schema) | ../../ | n/a |
-| <a name="module_new_schema"></a> [new\_schema](#module\_new\_schema) | ../../ | n/a |
+| <a name="module_marts_schema"></a> [marts\_schema](#module\_marts\_schema) | ../../ | n/a |
+| <a name="module_raw_schema"></a> [raw\_schema](#module\_raw\_schema) | ../../ | n/a |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| <a name="output_new_schema"></a> [new\_schema](#output\_new\_schema) | Schema module outputs |
+| <a name="output_marts_schema"></a> [marts\_schema](#output\_marts\_schema) | Schema module outputs |
+| <a name="output_raw_schema"></a> [raw\_schema](#output\_raw\_schema) | Schema module outputs |
 
 ## Providers
 

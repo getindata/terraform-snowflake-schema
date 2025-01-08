@@ -14,7 +14,7 @@ data "context_label" "this" {
 resource "snowflake_schema" "this" {
   count = var.skip_schema_creation ? 0 : 1
 
-  name    = data.context_label.this.rendered
+  name    = var.name_scheme.uppercase ? upper(data.context_label.this.rendered) : data.context_label.this.rendered
   comment = var.comment
 
   database     = var.database
@@ -44,12 +44,13 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = "3.0.0"
+  version = "3.1.0"
 
   context_templates = var.context_templates
 
   name = each.key
   name_scheme = merge({
+    uppercase = var.name_scheme.uppercase
     extra_values = {
       database = var.database
       schema   = var.name
@@ -57,7 +58,7 @@ module "snowflake_stage" {
     lookup(each.value, "name_scheme", {})
   )
 
-  schema   = local.schema
+  schema   = local.schema_name
   database = var.database
 
   aws_external_id     = each.value.aws_external_id
@@ -79,7 +80,7 @@ module "snowflake_default_role" {
   for_each = local.default_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "2.0.1"
+  version = "2.1.0"
 
   database_name     = var.database
   context_templates = var.context_templates
@@ -101,7 +102,7 @@ module "snowflake_custom_role" {
   for_each = local.custom_roles
 
   source  = "getindata/database-role/snowflake"
-  version = "2.0.1"
+  version = "2.1.0"
 
   database_name     = var.database
   context_templates = var.context_templates
