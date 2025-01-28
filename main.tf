@@ -44,7 +44,7 @@ module "snowflake_stage" {
   for_each = var.stages
 
   source  = "getindata/stage/snowflake"
-  version = "3.1.0"
+  version = "3.1.1"
 
   context_templates = var.context_templates
 
