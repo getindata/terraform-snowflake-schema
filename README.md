@@ -92,6 +92,33 @@ List od code and variable (API) changes:
   - `context_templates`
   - `name_schema`
 
+## Breaking changes in v4.x of the module
+
+- Due to rename of Snowflake terraform provider source, all `versions.tf` files were updated accordingly.
+
+  Please keep in mind to mirror this change in your own repos also.
+
+  For more information about provider rename, refer to [Snowflake documentation](https://github.com/snowflakedb/terraform-provider-snowflake/blob/main/SNOWFLAKEDB_MIGRATION.md).
+
+- Maximal version of supported provider was also unblocked (previosly locked in terraform-snowflake-stage module), so keep in mind that, starting with Snowflake provider version `1.x`, the `snowflake_stage` resource is considered a preview feature and must be explicitly enabled in the provider configuration.
+
+  **Required Provider Configuration:**
+
+  ```terraform
+  provider "snowflake" {
+    preview_features_enabled = ["snowflake_stage_resource"]
+  }
+  ```
+
+  Without this configuration, you will encounter the following error:
+
+  ```shell
+  Error: snowflake_stage_resource is currently a preview feature, and must be enabled by adding snowflake_stage_resource to preview_features_enabled in Terraform configuration.
+  ```
+
+  For more information about preview features, refer to the [Snowflake provider documentation](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/stage#preview-features) and [Snowflake stage resource documentation](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/stage).
+
+
 <!-- BEGIN_TF_DOCS -->
 
 
@@ -135,9 +162,9 @@ List od code and variable (API) changes:
 | Name | Source | Version |
 |------|--------|---------|
 | <a name="module_roles_deep_merge"></a> [roles\_deep\_merge](#module\_roles\_deep\_merge) | Invicton-Labs/deepmerge/null | 0.1.5 |
-| <a name="module_snowflake_custom_role"></a> [snowflake\_custom\_role](#module\_snowflake\_custom\_role) | getindata/database-role/snowflake | 2.1.0 |
-| <a name="module_snowflake_default_role"></a> [snowflake\_default\_role](#module\_snowflake\_default\_role) | getindata/database-role/snowflake | 2.1.0 |
-| <a name="module_snowflake_stage"></a> [snowflake\_stage](#module\_snowflake\_stage) | getindata/stage/snowflake | 3.1.1 |
+| <a name="module_snowflake_custom_role"></a> [snowflake\_custom\_role](#module\_snowflake\_custom\_role) | getindata/database-role/snowflake | 3.0.0 |
+| <a name="module_snowflake_default_role"></a> [snowflake\_default\_role](#module\_snowflake\_default\_role) | getindata/database-role/snowflake | 3.0.0 |
+| <a name="module_snowflake_stage"></a> [snowflake\_stage](#module\_snowflake\_stage) | getindata/stage/snowflake | 4.1.0 |
 
 ## Outputs
 
@@ -188,7 +215,7 @@ List od code and variable (API) changes:
 
 | Name | Type |
 |------|------|
-| [snowflake_schema.this](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/schema) | resource |
+| [snowflake_schema.this](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/schema) | resource |
 | [context_label.this](https://registry.terraform.io/providers/cloudposse/context/latest/docs/data-sources/label) | data source |
 <!-- END_TF_DOCS -->
 
