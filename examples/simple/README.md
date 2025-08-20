@@ -63,5 +63,5 @@ No inputs.
 
 | Name | Type |
 |------|------|
-| [snowflake_database.test](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/database) | resource |
+| [snowflake_database.test](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/database) | resource |
 <!-- END_TF_DOCS -->

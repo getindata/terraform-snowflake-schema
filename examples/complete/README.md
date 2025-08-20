@@ -70,12 +70,12 @@ terraform destroy -var-file=fixtures.tfvars
 
 | Name | Type |
 |------|------|
-| [snowflake_account_role.role_1](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/account_role) | resource |
-| [snowflake_database.this](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/database) | resource |
-| [snowflake_database_role.db_role_1](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/database_role) | resource |
-| [snowflake_database_role.db_role_2](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/database_role) | resource |
-| [snowflake_database_role.db_role_3](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/database_role) | resource |
-| [snowflake_schema.this](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/schema) | resource |
-| [snowflake_table.table_1](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/table) | resource |
-| [snowflake_table.table_2](https://registry.terraform.io/providers/Snowflake-Labs/snowflake/latest/docs/resources/table) | resource |
+| [snowflake_account_role.role_1](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/account_role) | resource |
+| [snowflake_database.this](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/database) | resource |
+| [snowflake_database_role.db_role_1](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/database_role) | resource |
+| [snowflake_database_role.db_role_2](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/database_role) | resource |
+| [snowflake_database_role.db_role_3](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/database_role) | resource |
+| [snowflake_schema.this](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/schema) | resource |
+| [snowflake_table.table_1](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/table) | resource |
+| [snowflake_table.table_2](https://registry.terraform.io/providers/snowflakedb/snowflake/latest/docs/resources/table) | resource |
 <!-- END_TF_DOCS -->
